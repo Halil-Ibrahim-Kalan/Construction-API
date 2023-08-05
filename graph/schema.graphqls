@@ -1,0 +1,79 @@
+# https://gqlgen.com/getting-started/
+
+type Task {
+  id: ID!
+  name: String!
+  description: String
+  detail: String
+  user: Staff
+  status: String
+  project: Project
+  location: Location
+  staff: [Staff]
+}
+
+type Staff {
+  id: ID!
+  name: String
+  department: String
+  role: String
+}
+
+type Project {
+  id: ID!
+  name: String!
+}
+
+type Location {
+  id: ID!
+  name: String!
+}
+
+input StaffInput {
+  name: String!
+  department: String
+  role: String
+}
+
+input TaskInput {
+  name: String!
+  description: String
+  detail: String
+  userID: ID
+  status: String
+  projectID: ID
+  locationID: ID
+  staffIDs: [ID]
+}
+
+type Query {
+  tasks: [Task!]!
+  task(id: ID!): Task!
+
+  projects: [Project!]!
+  project(id: ID!): Project!
+
+  locations: [Location!]!
+  location(id: ID!): Location!
+
+  staff: [Staff!]!
+  staffMember(id: ID!): Staff!
+}
+
+type Mutation {
+  createTask(input: TaskInput!): Task!
+  updateTask(id: ID!, input: TaskInput!): Task!
+  deleteTask(id: ID!): Boolean!
+
+  createProject(name: String!): Project!
+  updateProject(id: ID!, name: String!): Project!
+  deleteProject(id: ID!): Boolean!
+
+  createLocation(name: String!): Location!
+  updateLocation(id: ID!, name: String!): Location!
+  deleteLocation(id: ID!): Boolean!
+
+  createStaff(input: StaffInput!): Staff!
+  updateStaff(id: ID!, input: StaffInput!): Staff!
+  deleteStaff(id: ID!): Boolean!
+}

@@ -11,33 +11,6 @@ import (
 	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph/utils"
 )
 
-// func create[T any](r *mutationResolver, model *T, input interface{}) (interface{}, error) {
-// 	err := r.DB.Create(model).Error
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return model, nil
-// }
-
-// func update[T any](r *mutationResolver, model *T, input interface{}) (interface{}, error) {
-// 	err := r.DB.Save(model).Error
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return model, nil
-// }
-
-// func delete[T any](r *mutationResolver, model *T, id int) (bool, error) {
-// 	err := r.DB.Where("id = ?", id).Delete(&model).Error
-
-// 	if err != nil {
-// 		return false, err
-// 	}
-// 	return true, nil
-// }
-
 // CreateTask is the resolver for the createTask field.
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.TaskInput) (*model.Task, error) {
 	task := utils.ToTask(input, r.DB)
@@ -163,7 +136,7 @@ func (r *mutationResolver) DeleteLocation(ctx context.Context, id int) (bool, er
 func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInput) (*model.Staff, error) {
 	staff := model.Staff{
 		Name:       &input.Name,
-		Department: input.Department,
+		Department: utils.ToDepartment(*input.DepartmentID, r.DB),
 		Role:       input.Role,
 	}
 
@@ -181,7 +154,7 @@ func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.
 	staff := model.Staff{
 		ID:         id,
 		Name:       &input.Name,
-		Department: input.Department,
+		Department: utils.ToDepartment(*input.DepartmentID, r.DB),
 		Role:       input.Role,
 	}
 
@@ -197,6 +170,48 @@ func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.
 // DeleteStaff is the resolver for the deleteStaff field.
 func (r *mutationResolver) DeleteStaff(ctx context.Context, id int) (bool, error) {
 	err := r.DB.Where("id = ?", id).Delete(&model.Staff{}).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// CreateDepartment is the resolver for the createDepartment field.
+func (r *mutationResolver) CreateDepartment(ctx context.Context, name string) (*model.Department, error) {
+	department := model.Department{
+		Name: name,
+	}
+
+	err := r.DB.Create(&department).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &department, nil
+}
+
+// UpdateDepartment is the resolver for the updateDepartment field.
+func (r *mutationResolver) UpdateDepartment(ctx context.Context, id int, name string) (*model.Department, error) {
+	department := model.Department{
+		ID:   id,
+		Name: name,
+	}
+
+	err := r.DB.Save(&department).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &department, nil
+}
+
+// DeleteDepartment is the resolver for the deleteDepartment field.
+func (r *mutationResolver) DeleteDepartment(ctx context.Context, id int) (bool, error) {
+	err := r.DB.Where("id = ?", id).Delete(&model.Department{}).Error
 
 	if err != nil {
 		return false, err
@@ -301,10 +316,34 @@ func (r *queryResolver) StaffMember(ctx context.Context, id int) (*model.Staff, 
 	return staffMember, nil
 }
 
-// Mutation returns generated.MutationResolver implementation.
+// Departments is the resolver for the departments field.
+func (r *queryResolver) Departments(ctx context.Context) ([]*model.Department, error) {
+	var departments []*model.Department
+	err := r.DB.Set("gorm:auto_preload", true).Find(&departments).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return departments, nil
+}
+
+// Department is the resolver for the department field.
+func (r *queryResolver) Department(ctx context.Context, id int) (*model.Department, error) {
+	var department *model.Department
+	err := r.DB.Set("gorm:auto_preload", true).Where("id = ?", id).First(&department).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return department, nil
+}
+
+// Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated.QueryResolver implementation.
+// Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }

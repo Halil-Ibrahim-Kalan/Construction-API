@@ -4,21 +4,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+
+	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph"
+	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph/model"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph"
-	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph/model"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var db *gorm.DB
+var e *echo.Echo
 
 func initDB() {
 	var err error
-	dataSourceName := "root:@tcp(localhost:3306)/?parseTime=True"
+	dataSourceName := "root:@tcp(localhost:3306)/test_db?parseTime=True"
 	db, err = gorm.Open("mysql", dataSourceName)
 
 	if err != nil {
@@ -28,30 +31,49 @@ func initDB() {
 
 	db.LogMode(true)
 
-	// Create the database. This is a one-time step.
-	// Comment out if running multiple times - You may see an error otherwise
-	db.Exec("CREATE DATABASE test_db")
-	db.Exec("USE test_db")
-
-	// Migration to create tables for Order and Item schema
-	db.AutoMigrate(&model.Location{}, &model.Project{}, &model.Staff{}, &model.Task{})
+	db.AutoMigrate(&model.Location{}, &model.Project{}, &model.Staff{}, &model.Task{}, &model.Department{})
 }
 
-const defaultPort = "8080"
+func Middleware(e *echo.Echo) {
+	// noCache := func(next echo.HandlerFunc) echo.HandlerFunc {
+	// 	return func(c echo.Context) error {
+	// 		c.Response().Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	// 		c.Response().Header().Set("Pragma", "no-cache")
+	// 		c.Response().Header().Set("Expires", "0")
+	// 		return next(c)
+	// 	}
+	// }
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE, echo.OPTIONS},
+	}))
+	//e.Use(noCache)
+}
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
-
 	initDB()
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	e = echo.New()
+	Middleware(e)
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Welcome to the GraphQL playground")
+	})
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: db}}))
+	playgroundHandler := playground.Handler("GraphQL playground", "/query")
+
+	e.POST("/query", func(c echo.Context) error {
+		graphqlHandler.ServeHTTP(c.Response(), c.Request())
+		return nil
+	})
+
+	e.GET("/playground", func(c echo.Context) error {
+		playgroundHandler.ServeHTTP(c.Response(), c.Request())
+		return nil
+	})
+
+	log.Fatal(e.Start(":" + "8080"))
 }

@@ -2,6 +2,11 @@
 
 package model
 
+type Department struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 type Location struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -13,16 +18,16 @@ type Project struct {
 }
 
 type Staff struct {
-	ID         int     `json:"id"`
-	Name       *string `json:"name,omitempty"`
-	Department *string `json:"department,omitempty"`
-	Role       *string `json:"role,omitempty"`
+	ID         int         `json:"id"`
+	Name       *string     `json:"name,omitempty"`
+	Department *Department `json:"department,omitempty"`
+	Role       *string     `json:"role,omitempty"`
 }
 
 type StaffInput struct {
-	Name       string  `json:"name"`
-	Department *string `json:"department,omitempty"`
-	Role       *string `json:"role,omitempty"`
+	Name         string  `json:"name"`
+	DepartmentID *int    `json:"departmentID,omitempty"`
+	Role         *string `json:"role,omitempty"`
 }
 
 type Task struct {

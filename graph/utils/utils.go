@@ -5,31 +5,40 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-func ToStaff(userID int, r *gorm.DB) *model.Staff {
+func ToStaff(id int, r *gorm.DB) *model.Staff {
 	staff := model.Staff{}
-	err := r.First(&staff, "id = ?", userID).Error
+	err := r.First(&staff, "id = ?", id).Error
 	if err != nil {
 		return nil
 	}
 	return &staff
 }
 
-func ToProject(userID int, r *gorm.DB) *model.Project {
+func ToProject(id int, r *gorm.DB) *model.Project {
 	project := model.Project{}
-	err := r.First(&project, "id = ?", userID).Error
+	err := r.First(&project, "id = ?", id).Error
 	if err != nil {
 		return nil
 	}
 	return &project
 }
 
-func ToLocation(userID int, r *gorm.DB) *model.Location {
+func ToLocation(id int, r *gorm.DB) *model.Location {
 	location := model.Location{}
-	err := r.First(&location, "id = ?", userID).Error
+	err := r.First(&location, "id = ?", id).Error
 	if err != nil {
 		return nil
 	}
 	return &location
+}
+
+func ToDepartment(id int, r *gorm.DB) *model.Department {
+	department := model.Department{}
+	err := r.First(&department, "id = ?", id).Error
+	if err != nil {
+		return nil
+	}
+	return &department
 }
 
 func MapStaffFromInput(staffIDs []*int, r *gorm.DB) []*model.Staff {

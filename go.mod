@@ -1,4 +1,4 @@
-module github.com/Halil-Ibrahim-Kalan/Construction-API
+module Construction-API
 
 go 1.20
 

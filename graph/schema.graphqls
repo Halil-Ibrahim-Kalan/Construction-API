@@ -1,20 +1,20 @@
 type Task {
   id: ID!
   name: String!
-  description: String
-  detail: String
-  user: Staff
-  status: String
-  project: Project
-  location: Location
-  staff: [Staff]
+  description: String!
+  detail: String!
+  user: Staff!
+  status: String!
+  project: Project!
+  location: Location!
+  staff: [Staff!]!
 }
 
 type Staff {
   id: ID!
-  name: String
-  department: Department
-  role: String
+  name: String!
+  department: Department!
+  role: String!
 }
 
 type Project {
@@ -27,26 +27,26 @@ type Location {
   name: String!
 }
 
-input StaffInput {
-  name: String!
-  departmentID: ID
-  role: String
-}
-
 type Department {
   id: ID!
   name: String!
 }
 
+input StaffInput {
+  name: String!
+  departmentID: ID!
+  role: String!
+}
+
 input TaskInput {
   name: String!
-  description: String
-  detail: String
-  userID: ID
-  status: String
-  projectID: ID
-  locationID: ID
-  staffIDs: [ID]
+  description: String!
+  detail: String!
+  userID: ID!
+  status: String!
+  projectID: ID!
+  locationID: ID!
+  staffIDs: [ID!]!
 }
 
 type Query {

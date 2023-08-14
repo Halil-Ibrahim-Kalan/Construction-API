@@ -7,8 +7,8 @@ package graph
 import (
 	"context"
 
-	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph/model"
-	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph/utils"
+	"Construction-API/graph/model"
+	"Construction-API/graph/utils"
 )
 
 // CreateTask is the resolver for the createTask field.
@@ -135,8 +135,8 @@ func (r *mutationResolver) DeleteLocation(ctx context.Context, id int) (bool, er
 // CreateStaff is the resolver for the createStaff field.
 func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInput) (*model.Staff, error) {
 	staff := model.Staff{
-		Name:       &input.Name,
-		Department: utils.ToDepartment(*input.DepartmentID, r.DB),
+		Name:       input.Name,
+		Department: utils.ToDepartment(input.DepartmentID, r.DB),
 		Role:       input.Role,
 	}
 
@@ -153,8 +153,8 @@ func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInp
 func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.StaffInput) (*model.Staff, error) {
 	staff := model.Staff{
 		ID:         id,
-		Name:       &input.Name,
-		Department: utils.ToDepartment(*input.DepartmentID, r.DB),
+		Name:       input.Name,
+		Department: utils.ToDepartment(input.DepartmentID, r.DB),
 		Role:       input.Role,
 	}
 

@@ -1,7 +1,8 @@
 package utils
 
 import (
-	"github.com/Halil-Ibrahim-Kalan/Construction-API/graph/model"
+	"Construction-API/graph/model"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -41,19 +42,19 @@ func ToDepartment(id int, r *gorm.DB) *model.Department {
 	return &department
 }
 
-func MapStaffFromInput(staffIDs []*int, r *gorm.DB) []*model.Staff {
+func MapStaffFromInput(staffIDs []int, r *gorm.DB) []*model.Staff {
 	var staff []*model.Staff
 	for _, staffID := range staffIDs {
-		staffMember := ToStaff(*staffID, r)
+		staffMember := ToStaff(staffID, r)
 		staff = append(staff, staffMember)
 	}
 	return staff
 }
 
 func ToTask(input model.TaskInput, r *gorm.DB) model.Task {
-	user := ToStaff(*input.UserID, r)
-	project := ToProject(*input.ProjectID, r)
-	location := ToLocation(*input.LocationID, r)
+	user := ToStaff(input.UserID, r)
+	project := ToProject(input.ProjectID, r)
+	location := ToLocation(input.LocationID, r)
 	staff := MapStaffFromInput(input.StaffIDs, r)
 
 	task := model.Task{

@@ -19,36 +19,36 @@ type Project struct {
 
 type Staff struct {
 	ID         int         `json:"id"`
-	Name       *string     `json:"name,omitempty"`
-	Department *Department `json:"department,omitempty"`
-	Role       *string     `json:"role,omitempty"`
+	Name       string      `json:"name"`
+	Department *Department `json:"department"`
+	Role       string      `json:"role"`
 }
 
 type StaffInput struct {
-	Name         string  `json:"name"`
-	DepartmentID *int    `json:"departmentID,omitempty"`
-	Role         *string `json:"role,omitempty"`
+	Name         string `json:"name"`
+	DepartmentID int    `json:"departmentID"`
+	Role         string `json:"role"`
 }
 
 type Task struct {
 	ID          int       `json:"id"`
 	Name        string    `json:"name"`
-	Description *string   `json:"description,omitempty"`
-	Detail      *string   `json:"detail,omitempty"`
-	User        *Staff    `json:"user,omitempty"`
-	Status      *string   `json:"status,omitempty"`
-	Project     *Project  `json:"project,omitempty"`
-	Location    *Location `json:"location,omitempty"`
-	Staff       []*Staff  `json:"staff,omitempty"`
+	Description string    `json:"description"`
+	Detail      string    `json:"detail"`
+	User        *Staff    `json:"user"`
+	Status      string    `json:"status"`
+	Project     *Project  `json:"project"`
+	Location    *Location `json:"location"`
+	Staff       []*Staff  `json:"staff"`
 }
 
 type TaskInput struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Detail      *string `json:"detail,omitempty"`
-	UserID      *int    `json:"userID,omitempty"`
-	Status      *string `json:"status,omitempty"`
-	ProjectID   *int    `json:"projectID,omitempty"`
-	LocationID  *int    `json:"locationID,omitempty"`
-	StaffIDs    []*int  `json:"staffIDs,omitempty"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Detail      string `json:"detail"`
+	UserID      int    `json:"userID"`
+	Status      string `json:"status"`
+	ProjectID   int    `json:"projectID"`
+	LocationID  int    `json:"locationID"`
+	StaffIDs    []int  `json:"staffIDs"`
 }

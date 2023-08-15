@@ -3,7 +3,7 @@ package utils
 import (
 	"Construction-API/graph/model"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func ToStaff(id int, r *gorm.DB) *model.Staff {

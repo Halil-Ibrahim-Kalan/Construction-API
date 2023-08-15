@@ -3,6 +3,7 @@
 package graph
 
 import (
+	"Construction-API/graph/model"
 	"bytes"
 	"context"
 	"embed"
@@ -14,7 +15,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"Construction-API/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -741,7 +741,7 @@ func (ec *executionContext) field_Mutation_createStaff_args(ctx context.Context,
 	var arg0 model.StaffInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNStaffInput2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaffInput(ctx, tmp)
+		arg0, err = ec.unmarshalNStaffInput2ConstructionᚑAPIᚋgraphᚋmodelᚐStaffInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -756,7 +756,7 @@ func (ec *executionContext) field_Mutation_createTask_args(ctx context.Context, 
 	var arg0 model.TaskInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNTaskInput2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTaskInput(ctx, tmp)
+		arg0, err = ec.unmarshalNTaskInput2ConstructionᚑAPIᚋgraphᚋmodelᚐTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -927,7 +927,7 @@ func (ec *executionContext) field_Mutation_updateStaff_args(ctx context.Context,
 	var arg1 model.StaffInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNStaffInput2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaffInput(ctx, tmp)
+		arg1, err = ec.unmarshalNStaffInput2ConstructionᚑAPIᚋgraphᚋmodelᚐStaffInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -951,7 +951,7 @@ func (ec *executionContext) field_Mutation_updateTask_args(ctx context.Context, 
 	var arg1 model.TaskInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNTaskInput2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTaskInput(ctx, tmp)
+		arg1, err = ec.unmarshalNTaskInput2ConstructionᚑAPIᚋgraphᚋmodelᚐTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1292,7 +1292,7 @@ func (ec *executionContext) _Mutation_createTask(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createTask(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1367,7 +1367,7 @@ func (ec *executionContext) _Mutation_updateTask(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateTask(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1497,7 +1497,7 @@ func (ec *executionContext) _Mutation_createProject(ctx context.Context, field g
 	}
 	res := resTmp.(*model.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createProject(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1558,7 +1558,7 @@ func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field g
 	}
 	res := resTmp.(*model.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateProject(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1674,7 +1674,7 @@ func (ec *executionContext) _Mutation_createLocation(ctx context.Context, field 
 	}
 	res := resTmp.(*model.Location)
 	fc.Result = res
-	return ec.marshalNLocation2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+	return ec.marshalNLocation2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createLocation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1735,7 +1735,7 @@ func (ec *executionContext) _Mutation_updateLocation(ctx context.Context, field 
 	}
 	res := resTmp.(*model.Location)
 	fc.Result = res
-	return ec.marshalNLocation2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+	return ec.marshalNLocation2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateLocation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1851,7 +1851,7 @@ func (ec *executionContext) _Mutation_createStaff(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Staff)
 	fc.Result = res
-	return ec.marshalNStaff2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
+	return ec.marshalNStaff2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createStaff(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1916,7 +1916,7 @@ func (ec *executionContext) _Mutation_updateStaff(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Staff)
 	fc.Result = res
-	return ec.marshalNStaff2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
+	return ec.marshalNStaff2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateStaff(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2036,7 +2036,7 @@ func (ec *executionContext) _Mutation_createDepartment(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createDepartment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2097,7 +2097,7 @@ func (ec *executionContext) _Mutation_updateDepartment(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateDepartment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2301,7 +2301,7 @@ func (ec *executionContext) _Query_tasks(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.([]*model.Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_tasks(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2365,7 +2365,7 @@ func (ec *executionContext) _Query_task(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_task(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2440,7 +2440,7 @@ func (ec *executionContext) _Query_projects(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProjectᚄ(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐProjectᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_projects(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2490,7 +2490,7 @@ func (ec *executionContext) _Query_project(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_project(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2551,7 +2551,7 @@ func (ec *executionContext) _Query_locations(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.Location)
 	fc.Result = res
-	return ec.marshalNLocation2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocationᚄ(ctx, field.Selections, res)
+	return ec.marshalNLocation2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocationᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_locations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2601,7 +2601,7 @@ func (ec *executionContext) _Query_location(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Location)
 	fc.Result = res
-	return ec.marshalNLocation2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+	return ec.marshalNLocation2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_location(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2662,7 +2662,7 @@ func (ec *executionContext) _Query_staff(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.([]*model.Staff)
 	fc.Result = res
-	return ec.marshalNStaff2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaffᚄ(ctx, field.Selections, res)
+	return ec.marshalNStaff2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaffᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_staff(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2716,7 +2716,7 @@ func (ec *executionContext) _Query_staffMember(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.Staff)
 	fc.Result = res
-	return ec.marshalNStaff2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
+	return ec.marshalNStaff2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_staffMember(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2781,7 +2781,7 @@ func (ec *executionContext) _Query_departments(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*model.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartmentᚄ(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartmentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_departments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2831,7 +2831,7 @@ func (ec *executionContext) _Query_department(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_department(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3109,7 +3109,7 @@ func (ec *executionContext) _Staff_department(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.Department)
 	fc.Result = res
-	return ec.marshalNDepartment2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+	return ec.marshalNDepartment2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Staff_department(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3379,7 +3379,7 @@ func (ec *executionContext) _Task_user(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.(*model.Staff)
 	fc.Result = res
-	return ec.marshalNStaff2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
+	return ec.marshalNStaff2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Task_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3477,7 +3477,7 @@ func (ec *executionContext) _Task_project(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*model.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Task_project(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3527,7 +3527,7 @@ func (ec *executionContext) _Task_location(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.Location)
 	fc.Result = res
-	return ec.marshalNLocation2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+	return ec.marshalNLocation2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Task_location(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3577,7 +3577,7 @@ func (ec *executionContext) _Task_staff(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.([]*model.Staff)
 	fc.Result = res
-	return ec.marshalNStaff2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaffᚄ(ctx, field.Selections, res)
+	return ec.marshalNStaff2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaffᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Task_staff(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6546,11 +6546,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNDepartment2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx context.Context, sel ast.SelectionSet, v model.Department) graphql.Marshaler {
+func (ec *executionContext) marshalNDepartment2ConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx context.Context, sel ast.SelectionSet, v model.Department) graphql.Marshaler {
 	return ec._Department(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Department) graphql.Marshaler {
+func (ec *executionContext) marshalNDepartment2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartmentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Department) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6574,7 +6574,7 @@ func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋHalilᚑIbra
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNDepartment2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, sel, v[i])
+			ret[i] = ec.marshalNDepartment2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6594,7 +6594,7 @@ func (ec *executionContext) marshalNDepartment2ᚕᚖgithubᚗcomᚋHalilᚑIbra
 	return ret
 }
 
-func (ec *executionContext) marshalNDepartment2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx context.Context, sel ast.SelectionSet, v *model.Department) graphql.Marshaler {
+func (ec *executionContext) marshalNDepartment2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx context.Context, sel ast.SelectionSet, v *model.Department) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -6651,11 +6651,11 @@ func (ec *executionContext) marshalNID2ᚕintᚄ(ctx context.Context, sel ast.Se
 	return ret
 }
 
-func (ec *executionContext) marshalNLocation2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v model.Location) graphql.Marshaler {
+func (ec *executionContext) marshalNLocation2ConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v model.Location) graphql.Marshaler {
 	return ec._Location(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNLocation2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Location) graphql.Marshaler {
+func (ec *executionContext) marshalNLocation2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Location) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6679,7 +6679,7 @@ func (ec *executionContext) marshalNLocation2ᚕᚖgithubᚗcomᚋHalilᚑIbrahi
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNLocation2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, sel, v[i])
+			ret[i] = ec.marshalNLocation2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6699,7 +6699,7 @@ func (ec *executionContext) marshalNLocation2ᚕᚖgithubᚗcomᚋHalilᚑIbrahi
 	return ret
 }
 
-func (ec *executionContext) marshalNLocation2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
+func (ec *executionContext) marshalNLocation2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v *model.Location) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -6709,11 +6709,11 @@ func (ec *executionContext) marshalNLocation2ᚖgithubᚗcomᚋHalilᚑIbrahim�
 	return ec._Location(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNProject2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx context.Context, sel ast.SelectionSet, v model.Project) graphql.Marshaler {
+func (ec *executionContext) marshalNProject2ConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx context.Context, sel ast.SelectionSet, v model.Project) graphql.Marshaler {
 	return ec._Project(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProject2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProjectᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Project) graphql.Marshaler {
+func (ec *executionContext) marshalNProject2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐProjectᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Project) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6737,7 +6737,7 @@ func (ec *executionContext) marshalNProject2ᚕᚖgithubᚗcomᚋHalilᚑIbrahim
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNProject2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, sel, v[i])
+			ret[i] = ec.marshalNProject2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6757,7 +6757,7 @@ func (ec *executionContext) marshalNProject2ᚕᚖgithubᚗcomᚋHalilᚑIbrahim
 	return ret
 }
 
-func (ec *executionContext) marshalNProject2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx context.Context, sel ast.SelectionSet, v *model.Project) graphql.Marshaler {
+func (ec *executionContext) marshalNProject2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐProject(ctx context.Context, sel ast.SelectionSet, v *model.Project) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -6767,11 +6767,11 @@ func (ec *executionContext) marshalNProject2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑ
 	return ec._Project(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNStaff2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx context.Context, sel ast.SelectionSet, v model.Staff) graphql.Marshaler {
+func (ec *executionContext) marshalNStaff2ConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx context.Context, sel ast.SelectionSet, v model.Staff) graphql.Marshaler {
 	return ec._Staff(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNStaff2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaffᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Staff) graphql.Marshaler {
+func (ec *executionContext) marshalNStaff2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaffᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Staff) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6795,7 +6795,7 @@ func (ec *executionContext) marshalNStaff2ᚕᚖgithubᚗcomᚋHalilᚑIbrahim�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNStaff2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, sel, v[i])
+			ret[i] = ec.marshalNStaff2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6815,7 +6815,7 @@ func (ec *executionContext) marshalNStaff2ᚕᚖgithubᚗcomᚋHalilᚑIbrahim�
 	return ret
 }
 
-func (ec *executionContext) marshalNStaff2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx context.Context, sel ast.SelectionSet, v *model.Staff) graphql.Marshaler {
+func (ec *executionContext) marshalNStaff2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐStaff(ctx context.Context, sel ast.SelectionSet, v *model.Staff) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -6825,7 +6825,7 @@ func (ec *executionContext) marshalNStaff2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKa
 	return ec._Staff(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNStaffInput2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐStaffInput(ctx context.Context, v interface{}) (model.StaffInput, error) {
+func (ec *executionContext) unmarshalNStaffInput2ConstructionᚑAPIᚋgraphᚋmodelᚐStaffInput(ctx context.Context, v interface{}) (model.StaffInput, error) {
 	res, err := ec.unmarshalInputStaffInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -6845,11 +6845,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTask2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx context.Context, sel ast.SelectionSet, v model.Task) graphql.Marshaler {
+func (ec *executionContext) marshalNTask2ConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx context.Context, sel ast.SelectionSet, v model.Task) graphql.Marshaler {
 	return ec._Task(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTask2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Task) graphql.Marshaler {
+func (ec *executionContext) marshalNTask2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Task) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6873,7 +6873,7 @@ func (ec *executionContext) marshalNTask2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTask2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, sel, v[i])
+			ret[i] = ec.marshalNTask2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6893,7 +6893,7 @@ func (ec *executionContext) marshalNTask2ᚕᚖgithubᚗcomᚋHalilᚑIbrahimᚑ
 	return ret
 }
 
-func (ec *executionContext) marshalNTask2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx context.Context, sel ast.SelectionSet, v *model.Task) graphql.Marshaler {
+func (ec *executionContext) marshalNTask2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐTask(ctx context.Context, sel ast.SelectionSet, v *model.Task) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -6903,7 +6903,7 @@ func (ec *executionContext) marshalNTask2ᚖgithubᚗcomᚋHalilᚑIbrahimᚑKal
 	return ec._Task(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNTaskInput2githubᚗcomᚋHalilᚑIbrahimᚑKalanᚋConstructionᚑAPIᚋgraphᚋmodelᚐTaskInput(ctx context.Context, v interface{}) (model.TaskInput, error) {
+func (ec *executionContext) unmarshalNTaskInput2ConstructionᚑAPIᚋgraphᚋmodelᚐTaskInput(ctx context.Context, v interface{}) (model.TaskInput, error) {
 	res, err := ec.unmarshalInputTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

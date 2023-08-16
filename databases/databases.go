@@ -12,14 +12,17 @@ import (
 
 func InitDb() *gorm.DB {
 	Db := connectPostgresDB()
-	Db.AutoMigrate(&model.Location{}, &model.Project{}, &model.Staff{}, &model.Task{}, &model.Department{})
+	Db.AutoMigrate(&model.Department{}, &model.Location{}, &model.Project{}, &model.Staff{}, &model.Task{})
+
 	return Db
 }
 
 func connectMysqlDB() *gorm.DB {
 	config := utils.LoadConfig()
 	dataSourceName := config.DBUser + ":" + config.DBPassword + "@tcp" + "(" + config.DBHost + ":" + config.DBPort + ")/" + config.DBName + "?" + "parseTime=true"
-	db, err := gorm.Open(mysql.Open(dataSourceName), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dataSourceName), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+	})
 
 	if err != nil {
 		panic("failed to connect database! Error: " + err.Error())
@@ -30,10 +33,13 @@ func connectMysqlDB() *gorm.DB {
 func connectPostgresDB() *gorm.DB {
 	config := utils.LoadConfig()
 	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName, config.DBSSLMode,
+		"postgres://%s:%s@%s:%s/%s",
+		config.DBUser, config.DBPassword, config.DBHost, config.DBPort, config.DBName,
 	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+		// Logger:                                   logger.Default.LogMode(logger.Info),
+	})
 
 	if err != nil {
 		panic("failed to connect database! Error: " + err.Error())

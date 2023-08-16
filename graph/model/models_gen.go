@@ -1,72 +1,57 @@
 package model
 
 type Department struct {
-	ID   int    `gorm:"primaryKey"`
-	Name string `gorm:"not null"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type Location struct {
-	ID   int    `gorm:"primaryKey"`
-	Name string `gorm:"not null"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type Project struct {
-	ID   int    `gorm:"primaryKey"`
-	Name string `gorm:"not null"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type Staff struct {
-	ID         int         `gorm:"primaryKey"`
-	Name       string      `gorm:"not null"`
-	Department *Department `gorm:"foreignKey:department_id"`
-	Role       string      `gorm:"not null"`
-}
-
-type StaffInput struct {
-	Name         string `gorm:"not null"`
-	DepartmentID int    `gorm:"not null"`
-	Role         string `gorm:"not null"`
+	ID           int        `json:"id" gorm:"primaryKey"`
+	Name         string     `json:"name"`
+	DepartmentID int        `json:"departmentID"`
+	Department   Department `json:"department" gorm:"foreignKey:DepartmentID"`
+	Role         string     `json:"role"`
 }
 
 type Task struct {
-	ID          int       `gorm:"primaryKey"`
-	Name        string    `gorm:"not null"`
-	Description string    `gorm:"not null"`
-	Detail      string    `gorm:"not null"`
-	User        *Staff    `gorm:"foreignKey:userID"`
-	Status      string    `gorm:"not null"`
-	Project     *Project  `gorm:"foreignKey:projectID"`
-	Location    *Location `gorm:"foreignKey:locationID"`
-	Staff       []*Staff  `gorm:"manyToMany:staff_tasks"`
+	ID          int      `json:"id" gorm:"primaryKey"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Detail      string   `json:"detail"`
+	UserID      int      `json:"userID"`
+	User        Staff    `json:"user" gorm:"foreignKey:UserID"`
+	Status      string   `json:"status"`
+	ProjectID   int      `json:"projectID"`
+	Project     Project  `json:"project" gorm:"foreignKey:ProjectID"`
+	LocationID  int      `json:"locationID"`
+	Location    Location `json:"location" gorm:"foreignKey:LocationID"`
+	StaffIDs    []int    `json:"staffIDs" gorm:"-"`
+	Staff       []Staff  `json:"staff" gorm:"many2many:task_staffs;"`
+}
+
+type StaffInput struct {
+	Name         string `json:"name"`
+	DepartmentID int    `json:"departmentID"`
+	Role         string `json:"role"`
 }
 
 type TaskInput struct {
-	Name        string `gorm:"not null"`
-	Description string `gorm:"not null"`
-	Detail      string `gorm:"not null"`
-	UserID      int    `gorm:"not null"`
-	Status      string `gorm:"not null"`
-	ProjectID   int    `gorm:"not null"`
-	LocationID  int    `gorm:"not null"`
-	StaffIDs    []int  `gorm:"not null"`
-}
-
-func (d *Department) TableName() string {
-	return "departments"
-}
-
-func (l *Location) TableName() string {
-	return "locations"
-}
-
-func (p *Project) TableName() string {
-	return "projects"
-}
-
-func (s *Staff) TableName() string {
-	return "staffs"
-}
-
-func (t *Task) TableName() string {
-	return "tasks"
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Detail      string `json:"detail"`
+	UserID      int    `json:"userID"`
+	Status      string `json:"status"`
+	ProjectID   int    `json:"projectID"`
+	LocationID  int    `json:"locationID"`
+	StaffIDs    []int  `json:"staffIDs"`
 }

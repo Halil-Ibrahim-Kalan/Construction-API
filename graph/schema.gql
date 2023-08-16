@@ -1,0 +1,95 @@
+type Task {
+  id: ID!
+  name: String!
+  description: String
+  detail: String
+  user: User
+  status: TaskStatus
+  project: Project
+  location: Location
+  users: [User!]!
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+type User {
+  id: ID!
+  name: String!
+  department: Department
+  role: String
+}
+
+type Project {
+  id: ID!
+  name: String!
+}
+
+type Location {
+  id: ID!
+  name: String!
+}
+
+type Department {
+  id: ID!
+  name: String!
+}
+
+input UserInput {
+  name: String!
+  departmentID: ID
+  role: String
+}
+
+input TaskInput {
+  name: String!
+  description: String
+  detail: String
+  userID: ID
+  status: String
+  projectID: ID
+  locationID: ID
+  staffIDs: [ID]
+}
+
+type Query {
+  tasks: [Task!]!
+  task(id: ID!): Task!
+
+  projects: [Project!]!
+  project(id: ID!): Project!
+
+  locations: [Location!]!
+  location(id: ID!): Location!
+
+  users: [User!]!
+  user(id: ID!): User!
+
+  departments: [Department!]!
+  department(id: ID!): Department!
+}
+
+type Mutation {
+  createTask(input: TaskInput!): Task!
+  updateTask(id: ID!, input: TaskInput!): Task!
+  deleteTask(id: ID!): Boolean!
+
+  createProject(name: String!): Project!
+  updateProject(id: ID!, name: String!): Project!
+  deleteProject(id: ID!): Boolean!
+
+  createLocation(name: String!): Location!
+  updateLocation(id: ID!, name: String!): Location!
+  deleteLocation(id: ID!): Boolean
+
+  createUser(input: UserInput!): User!
+  updateUser(id: ID!, input: UserInput!): User!
+  deleteUser(id: ID!): Boolean!
+
+  createDepartment(name: String!): Department!
+  updateDepartment(id: ID!, name: String!): Department!
+  deleteDepartment(id: ID!): Boolean!
+}

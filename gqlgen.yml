@@ -85,3 +85,7 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  # User:
+  #   model: graph/model.User
+  # Task:
+  #   model: graph/model.Task

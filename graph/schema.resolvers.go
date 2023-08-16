@@ -134,9 +134,9 @@ func (r *mutationResolver) DeleteLocation(ctx context.Context, id int) (bool, er
 // CreateStaff is the resolver for the createStaff field.
 func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInput) (*model.Staff, error) {
 	staff := model.Staff{
-		Name:       input.Name,
-		Department: utils.ToDepartment(input.DepartmentID, r.DB),
-		Role:       input.Role,
+		Name:         input.Name,
+		DepartmentID: input.DepartmentID,
+		Role:         input.Role,
 	}
 
 	err := r.DB.Create(&staff).Error
@@ -151,13 +151,12 @@ func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInp
 // UpdateStaff is the resolver for the updateStaff field.
 func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.StaffInput) (*model.Staff, error) {
 	staff := model.Staff{
-		ID:         id,
-		Name:       input.Name,
-		Department: utils.ToDepartment(input.DepartmentID, r.DB),
-		Role:       input.Role,
+		Name:         input.Name,
+		DepartmentID: input.DepartmentID,
+		Role:         input.Role,
 	}
 
-	err := r.DB.Save(&staff).Error
+	err := r.DB.Model(&model.Staff{}).Where("id = ?", id).Updates(staff).Error
 
 	if err != nil {
 		return nil, err

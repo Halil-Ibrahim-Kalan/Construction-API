@@ -52,20 +52,20 @@ func MapStaffFromInput(staffIDs []int, r *gorm.DB) []*model.Staff {
 }
 
 func ToTask(input model.TaskInput, r *gorm.DB) model.Task {
-	user := ToStaff(input.UserID, r)
-	project := ToProject(input.ProjectID, r)
-	location := ToLocation(input.LocationID, r)
-	staff := MapStaffFromInput(input.StaffIDs, r)
+	// user := ToStaff(input.UserID, r)
+	// project := ToProject(input.ProjectID, r)
+	// location := ToLocation(input.LocationID, r)
+	// staff := MapStaffFromInput(input.StaffIDs, r)
 
 	task := model.Task{
 		Name:        input.Name,
 		Description: input.Description,
 		Detail:      input.Detail,
-		User:        user,
+		UserID:      input.UserID,
 		Status:      input.Status,
-		Project:     project,
-		Location:    location,
-		Staff:       staff,
+		ProjectID:   input.ProjectID,
+		LocationID:  input.LocationID,
+		StaffIDs:    input.StaffIDs,
 	}
 	return task
 }

@@ -1,21 +1,22 @@
 package model
 
-// import "github.com/jinzhu/gorm"
+import pq "github.com/lib/pq"
 
-// type User struct {
-// 	gorm.Model
-// 	Name         string
-// 	DepartmentID uint
-// 	Role         string
-// }
+type StaffData struct {
+	ID           int `gorm:"primaryKey"`
+	Name         string
+	DepartmentID int
+	Role         string
+}
 
-// type Task struct {
-// 	gorm.Model
-// 	Name        string
-// 	Description string
-// 	Detail      string
-// 	Status      string
-// 	ProjectID   uint
-// 	LocationID  uint
-// 	UserIDs     []uint
-// }
+type TaskData struct {
+	ID          int `gorm:"primaryKey"`
+	Name        string
+	Description string
+	Detail      string
+	UserID      int
+	Status      string
+	ProjectID   int
+	LocationID  int
+	StaffIDs    pq.Int64Array `gorm:"type:integer[]"`
+}

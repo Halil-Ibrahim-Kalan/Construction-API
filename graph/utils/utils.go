@@ -2,18 +2,12 @@ package utils
 
 import (
 	"Construction-API/graph/model"
+	"errors"
+	"strconv"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
-
-func ToStaff(id int, r *gorm.DB) *model.Staff {
-	staff := model.Staff{}
-	err := r.First(&staff, "id = ?", id).Error
-	if err != nil {
-		return nil
-	}
-	return &staff
-}
 
 func ToProject(id int, r *gorm.DB) *model.Project {
 	project := model.Project{}
@@ -45,19 +39,40 @@ func ToDepartment(id int, r *gorm.DB) *model.Department {
 func MapStaffFromInput(staffIDs []int, r *gorm.DB) []*model.Staff {
 	var staff []*model.Staff
 	for _, staffID := range staffIDs {
-		staffMember := ToStaff(staffID, r)
+		staffMember, _ := ToStaff(staffID, r)
 		staff = append(staff, staffMember)
 	}
 	return staff
 }
 
-func ToTask(input model.TaskInput, r *gorm.DB) model.Task {
-	// user := ToStaff(input.UserID, r)
-	// project := ToProject(input.ProjectID, r)
-	// location := ToLocation(input.LocationID, r)
-	// staff := MapStaffFromInput(input.StaffIDs, r)
+func ToTask(data model.TaskData, r *gorm.DB) model.Task {
+	user, _ := ToStaff(data.UserID, r)
+	project := ToProject(data.ProjectID, r)
+	location := ToLocation(data.LocationID, r)
+	staff := MapStaffFromInput(arrayToSlice(data.StaffIDs), r)
 
 	task := model.Task{
+		ID:          data.ID,
+		Name:        data.Name,
+		Description: data.Description,
+		Detail:      data.Detail,
+		User:        user,
+		Status:      data.Status,
+		Project:     project,
+		Location:    location,
+		Staff:       staff,
+	}
+	return task
+}
+
+func ToTaskData(input model.TaskInput, r *gorm.DB) model.TaskData {
+	var staffIDs []int64
+
+	for _, value := range input.StaffIDs {
+		staffIDs = append(staffIDs, int64(value))
+	}
+
+	data := model.TaskData{
 		Name:        input.Name,
 		Description: input.Description,
 		Detail:      input.Detail,
@@ -65,7 +80,90 @@ func ToTask(input model.TaskInput, r *gorm.DB) model.Task {
 		Status:      input.Status,
 		ProjectID:   input.ProjectID,
 		LocationID:  input.LocationID,
-		StaffIDs:    input.StaffIDs,
+		StaffIDs:    pq.Int64Array(staffIDs),
+	}
+	return data
+}
+
+func ToStaff(id int, r *gorm.DB) (*model.Staff, error) {
+	var data *model.StaffData
+	err := r.Set("gorm:auto_preload", true).Where("id = ?", id).First(&data).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	var department *model.Department
+	err = r.Set("gorm:auto_preload", true).Where("id = ?", data.DepartmentID).First(&department).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	staffMember := model.Staff{
+		ID:         data.ID,
+		Name:       data.Name,
+		Department: department,
+		Role:       data.Role,
+	}
+
+	return &staffMember, nil
+}
+
+func arrayToSlice(array pq.Int64Array) []int {
+	var intSlice []int
+	for _, value := range array {
+		intSlice = append(intSlice, int(value))
+	}
+	return intSlice
+}
+
+func DataToTask(data model.TaskData, r *gorm.DB) model.Task {
+	user, _ := ToStaff(data.ID, r)
+	project := ToProject(data.ProjectID, r)
+	location := ToLocation(data.LocationID, r)
+	staff := MapStaffFromInput(arrayToSlice(data.StaffIDs), r)
+
+	task := model.Task{
+		ID:          data.ID,
+		Name:        data.Name,
+		Description: data.Description,
+		Detail:      data.Detail,
+		User:        user,
+		Status:      data.Status,
+		Project:     project,
+		Location:    location,
+		Staff:       staff,
 	}
 	return task
+}
+
+func CheckTask(input model.TaskInput, r *gorm.DB) (bool, error) {
+	user, err := ToStaff(input.UserID, r)
+	if user == nil || err != nil {
+		return false, errors.New("User not found! UserID: " + strconv.Itoa(input.UserID))
+	}
+
+	project := ToProject(input.ProjectID, r)
+	if project == nil {
+		return false, errors.New("Project not found! ProjectID: " + strconv.Itoa(input.ProjectID))
+	}
+
+	location := ToLocation(input.LocationID, r)
+	if location == nil {
+		return false, errors.New("Location not found! LocationID: " + strconv.Itoa(input.LocationID))
+	}
+
+	if input.StaffIDs == nil {
+		return false, errors.New("StaffIDs not found")
+	}
+
+	for _, staffID := range input.StaffIDs {
+		staffMember, err := ToStaff(staffID, r)
+		if staffMember == nil || err != nil {
+			return false, errors.New("StaffID not found! staffID: " + strconv.Itoa(staffID))
+		}
+	}
+
+	return true, nil
 }

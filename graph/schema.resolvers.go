@@ -8,37 +8,56 @@ import (
 	"Construction-API/graph/model"
 	"Construction-API/graph/utils"
 	"context"
+	"errors"
 )
+
+type ErrorResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
 
 // CreateTask is the resolver for the createTask field.
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.TaskInput) (*model.Task, error) {
-	task := utils.ToTask(input, r.DB)
-	err := r.DB.Create(&task).Error
+	ok, err := utils.CheckTask(input, r.DB)
+	if !ok {
+		return nil, err
+	}
+
+	data := utils.ToTaskData(input, r.DB)
+	err = r.DB.Create(&data).Error
 
 	if err != nil {
 		return nil, err
 	}
 
+	task := utils.ToTask(data, r.DB)
 	return &task, nil
 }
 
 // UpdateTask is the resolver for the updateTask field.
 func (r *mutationResolver) UpdateTask(ctx context.Context, id int, input model.TaskInput) (*model.Task, error) {
-	task := utils.ToTask(input, r.DB)
-	task.ID = id
+	ok, err := utils.CheckTask(input, r.DB)
+	if !ok {
+		return nil, err
+	}
 
-	err := r.DB.Save(&task).Error
+	data := utils.ToTaskData(input, r.DB)
+	data.ID = id
+
+	err = r.DB.Save(&data).Error
 
 	if err != nil {
 		return nil, err
 	}
 
+	task := utils.ToTask(data, r.DB)
+	task.ID = id
 	return &task, nil
 }
 
 // DeleteTask is the resolver for the deleteTask field.
 func (r *mutationResolver) DeleteTask(ctx context.Context, id int) (bool, error) {
-	err := r.DB.Where("id = ?", id).Delete(&model.Task{}).Error
+	err := r.DB.Where("id = ?", id).Delete(&model.TaskData{}).Error
 
 	if err != nil {
 		return false, err
@@ -133,41 +152,61 @@ func (r *mutationResolver) DeleteLocation(ctx context.Context, id int) (bool, er
 
 // CreateStaff is the resolver for the createStaff field.
 func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInput) (*model.Staff, error) {
-	staff := model.Staff{
+	department := utils.ToDepartment(input.DepartmentID, r.DB)
+	if department == nil {
+		return nil, errors.New("Department not found")
+	}
+	data := model.StaffData{
 		Name:         input.Name,
 		DepartmentID: input.DepartmentID,
 		Role:         input.Role,
 	}
 
-	err := r.DB.Create(&staff).Error
+	err := r.DB.Create(&data).Error
 
 	if err != nil {
 		return nil, err
 	}
 
+	staff := model.Staff{
+		Name:       input.Name,
+		Department: department,
+		Role:       input.Role,
+	}
 	return &staff, nil
 }
 
 // UpdateStaff is the resolver for the updateStaff field.
 func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.StaffInput) (*model.Staff, error) {
-	staff := model.Staff{
+	department := utils.ToDepartment(input.DepartmentID, r.DB)
+	if department == nil {
+		return nil, errors.New("Department not found")
+	}
+
+	data := model.StaffData{
+		ID:           id,
 		Name:         input.Name,
 		DepartmentID: input.DepartmentID,
 		Role:         input.Role,
 	}
-
-	err := r.DB.Model(&model.Staff{}).Where("id = ?", id).Updates(staff).Error
+	err := r.DB.Save(&data).Error
 
 	if err != nil {
 		return nil, err
 	}
 
+	staff := model.Staff{
+		ID:         id,
+		Name:       input.Name,
+		Department: department,
+		Role:       input.Role,
+	}
 	return &staff, nil
 }
 
 // DeleteStaff is the resolver for the deleteStaff field.
 func (r *mutationResolver) DeleteStaff(ctx context.Context, id int) (bool, error) {
-	err := r.DB.Where("id = ?", id).Delete(&model.Staff{}).Error
+	err := r.DB.Where("id = ?", id).Delete(&model.StaffData{}).Error
 
 	if err != nil {
 		return false, err
@@ -220,11 +259,17 @@ func (r *mutationResolver) DeleteDepartment(ctx context.Context, id int) (bool, 
 
 // Tasks is the resolver for the tasks field.
 func (r *queryResolver) Tasks(ctx context.Context) ([]*model.Task, error) {
-	var tasks []*model.Task
-	err := r.DB.Set("gorm:auto_preload", true).Find(&tasks).Error
+	var data []*model.TaskData
+	err := r.DB.Set("gorm:auto_preload", true).Find(&data).Error
 
 	if err != nil {
 		return nil, err
+	}
+
+	var tasks []*model.Task
+	for _, taskData := range data {
+		task := utils.DataToTask(*taskData, r.DB)
+		tasks = append(tasks, &task)
 	}
 
 	return tasks, nil
@@ -232,14 +277,15 @@ func (r *queryResolver) Tasks(ctx context.Context) ([]*model.Task, error) {
 
 // Task is the resolver for the task field.
 func (r *queryResolver) Task(ctx context.Context, id int) (*model.Task, error) {
-	var task *model.Task
-	err := r.DB.Set("gorm:auto_preload", true).Where("id = ?", id).First(&task).Error
-
+	var data *model.TaskData
+	err := r.DB.Set("gorm:auto_preload", true).Where("id = ?", id).First(&data).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return task, nil
+	task := utils.DataToTask(*data, r.DB)
+
+	return &task, nil
 }
 
 // Projects is the resolver for the projects field.
@@ -292,11 +338,28 @@ func (r *queryResolver) Location(ctx context.Context, id int) (*model.Location, 
 
 // Staff is the resolver for the staff field.
 func (r *queryResolver) Staff(ctx context.Context) ([]*model.Staff, error) {
-	var staff []*model.Staff
-	err := r.DB.Set("gorm:auto_preload", true).Find(&staff).Error
+	var data []*model.StaffData
+	err := r.DB.Set("gorm:auto_preload", true).Find(&data).Error
 
 	if err != nil {
 		return nil, err
+	}
+
+	var staff []*model.Staff
+	for _, staffMemberData := range data {
+		var department *model.Department
+		err = r.DB.Set("gorm:auto_preload", true).Where("id = ?", staffMemberData.DepartmentID).First(&department).Error
+
+		if err != nil {
+			return nil, err
+		}
+		staffMember := model.Staff{
+			ID:         staffMemberData.ID,
+			Name:       staffMemberData.Name,
+			Department: department,
+			Role:       staffMemberData.Role,
+		}
+		staff = append(staff, &staffMember)
 	}
 
 	return staff, nil
@@ -304,8 +367,7 @@ func (r *queryResolver) Staff(ctx context.Context) ([]*model.Staff, error) {
 
 // StaffMember is the resolver for the staffMember field.
 func (r *queryResolver) StaffMember(ctx context.Context, id int) (*model.Staff, error) {
-	var staffMember *model.Staff
-	err := r.DB.Set("gorm:auto_preload", true).Where("id = ?", id).First(&staffMember).Error
+	staffMember, err := utils.ToStaff(id, r.DB)
 
 	if err != nil {
 		return nil, err

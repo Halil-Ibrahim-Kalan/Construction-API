@@ -1,12 +1,14 @@
 package model
 
-import pq "github.com/lib/pq"
+import "github.com/lib/pq"
 
 type StaffData struct {
 	ID           int `gorm:"primaryKey"`
 	Name         string
 	DepartmentID int
 	Role         string
+	Password     string
+	Token        string
 }
 
 type TaskData struct {

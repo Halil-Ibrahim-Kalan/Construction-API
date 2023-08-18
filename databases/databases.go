@@ -5,7 +5,6 @@ import (
 	"Construction-API/utils"
 	"fmt"
 
-	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -15,19 +14,6 @@ func InitDb() *gorm.DB {
 	Db.AutoMigrate(&model.Department{}, &model.Location{}, &model.Project{}, &model.StaffData{}, &model.TaskData{})
 
 	return Db
-}
-
-func connectMysqlDB() *gorm.DB {
-	config := utils.LoadConfig()
-	dataSourceName := config.DBUser + ":" + config.DBPassword + "@tcp" + "(" + config.DBHost + ":" + config.DBPort + ")/" + config.DBName + "?" + "parseTime=true"
-	db, err := gorm.Open(mysql.Open(dataSourceName), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: true,
-	})
-
-	if err != nil {
-		panic("failed to connect database! Error: " + err.Error())
-	}
-	return db
 }
 
 func connectPostgresDB() *gorm.DB {

@@ -95,7 +95,9 @@ type ComplexityRoot struct {
 		Department func(childComplexity int) int
 		ID         func(childComplexity int) int
 		Name       func(childComplexity int) int
+		Password   func(childComplexity int) int
 		Role       func(childComplexity int) int
+		Token      func(childComplexity int) int
 	}
 
 	Task struct {
@@ -494,12 +496,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Staff.Name(childComplexity), true
 
+	case "Staff.password":
+		if e.complexity.Staff.Password == nil {
+			break
+		}
+
+		return e.complexity.Staff.Password(childComplexity), true
+
 	case "Staff.role":
 		if e.complexity.Staff.Role == nil {
 			break
 		}
 
 		return e.complexity.Staff.Role(childComplexity), true
+
+	case "Staff.token":
+		if e.complexity.Staff.Token == nil {
+			break
+		}
+
+		return e.complexity.Staff.Token(childComplexity), true
 
 	case "Task.description":
 		if e.complexity.Task.Description == nil {
@@ -1870,6 +1886,10 @@ func (ec *executionContext) fieldContext_Mutation_createStaff(ctx context.Contex
 				return ec.fieldContext_Staff_department(ctx, field)
 			case "role":
 				return ec.fieldContext_Staff_role(ctx, field)
+			case "password":
+				return ec.fieldContext_Staff_password(ctx, field)
+			case "token":
+				return ec.fieldContext_Staff_token(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Staff", field.Name)
 		},
@@ -1935,6 +1955,10 @@ func (ec *executionContext) fieldContext_Mutation_updateStaff(ctx context.Contex
 				return ec.fieldContext_Staff_department(ctx, field)
 			case "role":
 				return ec.fieldContext_Staff_role(ctx, field)
+			case "password":
+				return ec.fieldContext_Staff_password(ctx, field)
+			case "token":
+				return ec.fieldContext_Staff_token(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Staff", field.Name)
 		},
@@ -2681,6 +2705,10 @@ func (ec *executionContext) fieldContext_Query_staff(ctx context.Context, field 
 				return ec.fieldContext_Staff_department(ctx, field)
 			case "role":
 				return ec.fieldContext_Staff_role(ctx, field)
+			case "password":
+				return ec.fieldContext_Staff_password(ctx, field)
+			case "token":
+				return ec.fieldContext_Staff_token(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Staff", field.Name)
 		},
@@ -2735,6 +2763,10 @@ func (ec *executionContext) fieldContext_Query_staffMember(ctx context.Context, 
 				return ec.fieldContext_Staff_department(ctx, field)
 			case "role":
 				return ec.fieldContext_Staff_role(ctx, field)
+			case "password":
+				return ec.fieldContext_Staff_password(ctx, field)
+			case "token":
+				return ec.fieldContext_Staff_token(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Staff", field.Name)
 		},
@@ -3175,6 +3207,94 @@ func (ec *executionContext) fieldContext_Staff_role(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Staff_password(ctx context.Context, field graphql.CollectedField, obj *model.Staff) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Staff_password(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Password, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Staff_password(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Staff",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Staff_token(ctx context.Context, field graphql.CollectedField, obj *model.Staff) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Staff_token(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Staff_token(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Staff",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Task_id(ctx context.Context, field graphql.CollectedField, obj *model.Task) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Task_id(ctx, field)
 	if err != nil {
@@ -3398,6 +3518,10 @@ func (ec *executionContext) fieldContext_Task_user(ctx context.Context, field gr
 				return ec.fieldContext_Staff_department(ctx, field)
 			case "role":
 				return ec.fieldContext_Staff_role(ctx, field)
+			case "password":
+				return ec.fieldContext_Staff_password(ctx, field)
+			case "token":
+				return ec.fieldContext_Staff_token(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Staff", field.Name)
 		},
@@ -3596,6 +3720,10 @@ func (ec *executionContext) fieldContext_Task_staff(ctx context.Context, field g
 				return ec.fieldContext_Staff_department(ctx, field)
 			case "role":
 				return ec.fieldContext_Staff_role(ctx, field)
+			case "password":
+				return ec.fieldContext_Staff_password(ctx, field)
+			case "token":
+				return ec.fieldContext_Staff_token(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Staff", field.Name)
 		},
@@ -5383,7 +5511,7 @@ func (ec *executionContext) unmarshalInputStaffInput(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "departmentID", "role"}
+	fieldsInOrder := [...]string{"name", "departmentID", "role", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5417,6 +5545,15 @@ func (ec *executionContext) unmarshalInputStaffInput(ctx context.Context, obj in
 				return it, err
 			}
 			it.Role = data
+		case "password":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Password = data
 		}
 	}
 
@@ -6100,6 +6237,16 @@ func (ec *executionContext) _Staff(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "role":
 			out.Values[i] = ec._Staff_role(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "password":
+			out.Values[i] = ec._Staff_password(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "token":
+			out.Values[i] = ec._Staff_token(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

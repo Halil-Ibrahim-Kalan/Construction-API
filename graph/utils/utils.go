@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -105,6 +106,8 @@ func ToStaff(id int, r *gorm.DB) (*model.Staff, error) {
 		Name:       data.Name,
 		Department: department,
 		Role:       data.Role,
+		Password:   data.Password,
+		Token:      data.Token,
 	}
 
 	return &staffMember, nil
@@ -166,4 +169,55 @@ func CheckTask(input model.TaskInput, r *gorm.DB) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func DataToStaff(data model.StaffData, r *gorm.DB) model.Staff {
+	var department *model.Department
+	err := r.Set("gorm:auto_preload", true).Where("id = ?", data.DepartmentID).First(&department).Error
+
+	if err != nil {
+		return model.Staff{}
+	}
+
+	staffMember := model.Staff{
+		ID:         data.ID,
+		Name:       data.Name,
+		Department: department,
+		Role:       data.Role,
+		Password:   data.Password,
+		Token:      data.Token,
+	}
+
+	return staffMember
+}
+
+func CheckUserPass(username, password string, checkPass bool, r *gorm.DB) (bool, error) {
+	var data *model.StaffData
+	var err error
+	if checkPass {
+		err = r.Where("name = ?", username).Where("password = ?", password).First(&data).Error
+	} else {
+		err = r.Where("name = ?", username).First(&data).Error
+	}
+
+	if err != gorm.ErrRecordNotFound && err != nil {
+		return false, err
+	}
+
+	if err == gorm.ErrRecordNotFound {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func GenerateToken(name string) (string, error) {
+	userPassword := []byte(name)
+
+	hashedPassword, err := bcrypt.GenerateFromPassword(userPassword, bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hashedPassword), nil
 }

@@ -11,11 +11,6 @@ import (
 	"errors"
 )
 
-type ErrorResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
 // CreateTask is the resolver for the createTask field.
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.TaskInput) (*model.Task, error) {
 	ok, err := utils.CheckTask(input, r.DB)
@@ -152,26 +147,45 @@ func (r *mutationResolver) DeleteLocation(ctx context.Context, id int) (bool, er
 
 // CreateStaff is the resolver for the createStaff field.
 func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInput) (*model.Staff, error) {
+	ok, err := utils.CheckUserPass(input.Name, input.Password, false, r.DB)
+	if !ok {
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New("this user already exists")
+	}
+
 	department := utils.ToDepartment(input.DepartmentID, r.DB)
 	if department == nil {
 		return nil, errors.New("Department not found")
 	}
+
+	token, err := utils.GenerateToken(input.Name)
+	if err != nil {
+		return nil, err
+	}
+
 	data := model.StaffData{
 		Name:         input.Name,
 		DepartmentID: input.DepartmentID,
 		Role:         input.Role,
+		Password:     input.Password,
+		Token:        token,
 	}
 
-	err := r.DB.Create(&data).Error
+	err = r.DB.Create(&data).Error
 
 	if err != nil {
 		return nil, err
 	}
 
 	staff := model.Staff{
+		ID:         data.ID,
 		Name:       input.Name,
 		Department: department,
 		Role:       input.Role,
+		Password:   input.Password,
+		Token:      token,
 	}
 	return &staff, nil
 }
@@ -183,13 +197,21 @@ func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.
 		return nil, errors.New("Department not found")
 	}
 
+	var token string
+	err := r.DB.Model(&model.StaffData{}).Select("token").Where("id = ?", id).Scan(&token).Error
+	if err != nil {
+		return nil, err
+	}
+
 	data := model.StaffData{
 		ID:           id,
 		Name:         input.Name,
 		DepartmentID: input.DepartmentID,
 		Role:         input.Role,
+		Password:     input.Password,
+		Token:        token,
 	}
-	err := r.DB.Save(&data).Error
+	err = r.DB.Save(&data).Error
 
 	if err != nil {
 		return nil, err
@@ -200,6 +222,8 @@ func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.
 		Name:       input.Name,
 		Department: department,
 		Role:       input.Role,
+		Password:   input.Password,
+		Token:      token,
 	}
 	return &staff, nil
 }
@@ -358,6 +382,8 @@ func (r *queryResolver) Staff(ctx context.Context) ([]*model.Staff, error) {
 			Name:       staffMemberData.Name,
 			Department: department,
 			Role:       staffMemberData.Role,
+			Password:   staffMemberData.Password,
+			Token:      staffMemberData.Token,
 		}
 		staff = append(staff, &staffMember)
 	}

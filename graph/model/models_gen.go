@@ -22,12 +22,15 @@ type Staff struct {
 	Name       string      `json:"name"`
 	Department *Department `json:"department"`
 	Role       string      `json:"role"`
+	Password   string      `json:"password"`
+	Token      string      `json:"token"`
 }
 
 type StaffInput struct {
 	Name         string `json:"name"`
 	DepartmentID int    `json:"departmentID"`
 	Role         string `json:"role"`
+	Password     string `json:"password"`
 }
 
 type Task struct {

@@ -56,21 +56,21 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateDepartment func(childComplexity int, name string) int
-		CreateLocation   func(childComplexity int, name string) int
-		CreateProject    func(childComplexity int, name string) int
+		CreateDepartment func(childComplexity int, name string, token string) int
+		CreateLocation   func(childComplexity int, name string, token string) int
+		CreateProject    func(childComplexity int, name string, token string) int
 		CreateStaff      func(childComplexity int, input model.StaffInput) int
-		CreateTask       func(childComplexity int, input model.TaskInput) int
-		DeleteDepartment func(childComplexity int, id int) int
-		DeleteLocation   func(childComplexity int, id int) int
-		DeleteProject    func(childComplexity int, id int) int
-		DeleteStaff      func(childComplexity int, id int) int
-		DeleteTask       func(childComplexity int, id int) int
-		UpdateDepartment func(childComplexity int, id int, name string) int
-		UpdateLocation   func(childComplexity int, id int, name string) int
-		UpdateProject    func(childComplexity int, id int, name string) int
-		UpdateStaff      func(childComplexity int, id int, input model.StaffInput) int
-		UpdateTask       func(childComplexity int, id int, input model.TaskInput) int
+		CreateTask       func(childComplexity int, input model.TaskInput, token string) int
+		DeleteDepartment func(childComplexity int, id int, token string) int
+		DeleteLocation   func(childComplexity int, id int, token string) int
+		DeleteProject    func(childComplexity int, id int, token string) int
+		DeleteStaff      func(childComplexity int, id int, token string) int
+		DeleteTask       func(childComplexity int, id int, token string) int
+		UpdateDepartment func(childComplexity int, id int, name string, token string) int
+		UpdateLocation   func(childComplexity int, id int, name string, token string) int
+		UpdateProject    func(childComplexity int, id int, name string, token string) int
+		UpdateStaff      func(childComplexity int, id int, input model.StaffInput, token string) int
+		UpdateTask       func(childComplexity int, id int, input model.TaskInput, token string) int
 	}
 
 	Project struct {
@@ -85,10 +85,10 @@ type ComplexityRoot struct {
 		Locations   func(childComplexity int) int
 		Project     func(childComplexity int, id int) int
 		Projects    func(childComplexity int) int
-		Staff       func(childComplexity int) int
-		StaffMember func(childComplexity int, id int) int
-		Task        func(childComplexity int, id int) int
-		Tasks       func(childComplexity int) int
+		Staff       func(childComplexity int, token string) int
+		StaffMember func(childComplexity int, id int, token string) int
+		Task        func(childComplexity int, id int, token string) int
+		Tasks       func(childComplexity int, token string) int
 	}
 
 	Staff struct {
@@ -101,6 +101,7 @@ type ComplexityRoot struct {
 	}
 
 	Task struct {
+		Department  func(childComplexity int) int
 		Description func(childComplexity int) int
 		Detail      func(childComplexity int) int
 		ID          func(childComplexity int) int
@@ -114,31 +115,31 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateTask(ctx context.Context, input model.TaskInput) (*model.Task, error)
-	UpdateTask(ctx context.Context, id int, input model.TaskInput) (*model.Task, error)
-	DeleteTask(ctx context.Context, id int) (bool, error)
-	CreateProject(ctx context.Context, name string) (*model.Project, error)
-	UpdateProject(ctx context.Context, id int, name string) (*model.Project, error)
-	DeleteProject(ctx context.Context, id int) (bool, error)
-	CreateLocation(ctx context.Context, name string) (*model.Location, error)
-	UpdateLocation(ctx context.Context, id int, name string) (*model.Location, error)
-	DeleteLocation(ctx context.Context, id int) (bool, error)
+	CreateTask(ctx context.Context, input model.TaskInput, token string) (*model.Task, error)
+	UpdateTask(ctx context.Context, id int, input model.TaskInput, token string) (*model.Task, error)
+	DeleteTask(ctx context.Context, id int, token string) (bool, error)
+	CreateProject(ctx context.Context, name string, token string) (*model.Project, error)
+	UpdateProject(ctx context.Context, id int, name string, token string) (*model.Project, error)
+	DeleteProject(ctx context.Context, id int, token string) (bool, error)
+	CreateLocation(ctx context.Context, name string, token string) (*model.Location, error)
+	UpdateLocation(ctx context.Context, id int, name string, token string) (*model.Location, error)
+	DeleteLocation(ctx context.Context, id int, token string) (bool, error)
 	CreateStaff(ctx context.Context, input model.StaffInput) (*model.Staff, error)
-	UpdateStaff(ctx context.Context, id int, input model.StaffInput) (*model.Staff, error)
-	DeleteStaff(ctx context.Context, id int) (bool, error)
-	CreateDepartment(ctx context.Context, name string) (*model.Department, error)
-	UpdateDepartment(ctx context.Context, id int, name string) (*model.Department, error)
-	DeleteDepartment(ctx context.Context, id int) (bool, error)
+	UpdateStaff(ctx context.Context, id int, input model.StaffInput, token string) (*model.Staff, error)
+	DeleteStaff(ctx context.Context, id int, token string) (bool, error)
+	CreateDepartment(ctx context.Context, name string, token string) (*model.Department, error)
+	UpdateDepartment(ctx context.Context, id int, name string, token string) (*model.Department, error)
+	DeleteDepartment(ctx context.Context, id int, token string) (bool, error)
 }
 type QueryResolver interface {
-	Tasks(ctx context.Context) ([]*model.Task, error)
-	Task(ctx context.Context, id int) (*model.Task, error)
+	Tasks(ctx context.Context, token string) ([]*model.Task, error)
+	Task(ctx context.Context, id int, token string) (*model.Task, error)
 	Projects(ctx context.Context) ([]*model.Project, error)
 	Project(ctx context.Context, id int) (*model.Project, error)
 	Locations(ctx context.Context) ([]*model.Location, error)
 	Location(ctx context.Context, id int) (*model.Location, error)
-	Staff(ctx context.Context) ([]*model.Staff, error)
-	StaffMember(ctx context.Context, id int) (*model.Staff, error)
+	Staff(ctx context.Context, token string) ([]*model.Staff, error)
+	StaffMember(ctx context.Context, id int, token string) (*model.Staff, error)
 	Departments(ctx context.Context) ([]*model.Department, error)
 	Department(ctx context.Context, id int) (*model.Department, error)
 }
@@ -196,7 +197,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateDepartment(childComplexity, args["name"].(string)), true
+		return e.complexity.Mutation.CreateDepartment(childComplexity, args["name"].(string), args["token"].(string)), true
 
 	case "Mutation.createLocation":
 		if e.complexity.Mutation.CreateLocation == nil {
@@ -208,7 +209,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateLocation(childComplexity, args["name"].(string)), true
+		return e.complexity.Mutation.CreateLocation(childComplexity, args["name"].(string), args["token"].(string)), true
 
 	case "Mutation.createProject":
 		if e.complexity.Mutation.CreateProject == nil {
@@ -220,7 +221,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateProject(childComplexity, args["name"].(string)), true
+		return e.complexity.Mutation.CreateProject(childComplexity, args["name"].(string), args["token"].(string)), true
 
 	case "Mutation.createStaff":
 		if e.complexity.Mutation.CreateStaff == nil {
@@ -244,7 +245,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTask(childComplexity, args["input"].(model.TaskInput)), true
+		return e.complexity.Mutation.CreateTask(childComplexity, args["input"].(model.TaskInput), args["token"].(string)), true
 
 	case "Mutation.deleteDepartment":
 		if e.complexity.Mutation.DeleteDepartment == nil {
@@ -256,7 +257,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteDepartment(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteDepartment(childComplexity, args["id"].(int), args["token"].(string)), true
 
 	case "Mutation.deleteLocation":
 		if e.complexity.Mutation.DeleteLocation == nil {
@@ -268,7 +269,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteLocation(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteLocation(childComplexity, args["id"].(int), args["token"].(string)), true
 
 	case "Mutation.deleteProject":
 		if e.complexity.Mutation.DeleteProject == nil {
@@ -280,7 +281,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteProject(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteProject(childComplexity, args["id"].(int), args["token"].(string)), true
 
 	case "Mutation.deleteStaff":
 		if e.complexity.Mutation.DeleteStaff == nil {
@@ -292,7 +293,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteStaff(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteStaff(childComplexity, args["id"].(int), args["token"].(string)), true
 
 	case "Mutation.deleteTask":
 		if e.complexity.Mutation.DeleteTask == nil {
@@ -304,7 +305,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteTask(childComplexity, args["id"].(int)), true
+		return e.complexity.Mutation.DeleteTask(childComplexity, args["id"].(int), args["token"].(string)), true
 
 	case "Mutation.updateDepartment":
 		if e.complexity.Mutation.UpdateDepartment == nil {
@@ -316,7 +317,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateDepartment(childComplexity, args["id"].(int), args["name"].(string)), true
+		return e.complexity.Mutation.UpdateDepartment(childComplexity, args["id"].(int), args["name"].(string), args["token"].(string)), true
 
 	case "Mutation.updateLocation":
 		if e.complexity.Mutation.UpdateLocation == nil {
@@ -328,7 +329,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateLocation(childComplexity, args["id"].(int), args["name"].(string)), true
+		return e.complexity.Mutation.UpdateLocation(childComplexity, args["id"].(int), args["name"].(string), args["token"].(string)), true
 
 	case "Mutation.updateProject":
 		if e.complexity.Mutation.UpdateProject == nil {
@@ -340,7 +341,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProject(childComplexity, args["id"].(int), args["name"].(string)), true
+		return e.complexity.Mutation.UpdateProject(childComplexity, args["id"].(int), args["name"].(string), args["token"].(string)), true
 
 	case "Mutation.updateStaff":
 		if e.complexity.Mutation.UpdateStaff == nil {
@@ -352,7 +353,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateStaff(childComplexity, args["id"].(int), args["input"].(model.StaffInput)), true
+		return e.complexity.Mutation.UpdateStaff(childComplexity, args["id"].(int), args["input"].(model.StaffInput), args["token"].(string)), true
 
 	case "Mutation.updateTask":
 		if e.complexity.Mutation.UpdateTask == nil {
@@ -364,7 +365,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateTask(childComplexity, args["id"].(int), args["input"].(model.TaskInput)), true
+		return e.complexity.Mutation.UpdateTask(childComplexity, args["id"].(int), args["input"].(model.TaskInput), args["token"].(string)), true
 
 	case "Project.id":
 		if e.complexity.Project.ID == nil {
@@ -442,7 +443,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Staff(childComplexity), true
+		args, err := ec.field_Query_staff_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Staff(childComplexity, args["token"].(string)), true
 
 	case "Query.staffMember":
 		if e.complexity.Query.StaffMember == nil {
@@ -454,7 +460,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.StaffMember(childComplexity, args["id"].(int)), true
+		return e.complexity.Query.StaffMember(childComplexity, args["id"].(int), args["token"].(string)), true
 
 	case "Query.task":
 		if e.complexity.Query.Task == nil {
@@ -466,14 +472,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Task(childComplexity, args["id"].(int)), true
+		return e.complexity.Query.Task(childComplexity, args["id"].(int), args["token"].(string)), true
 
 	case "Query.tasks":
 		if e.complexity.Query.Tasks == nil {
 			break
 		}
 
-		return e.complexity.Query.Tasks(childComplexity), true
+		args, err := ec.field_Query_tasks_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Tasks(childComplexity, args["token"].(string)), true
 
 	case "Staff.department":
 		if e.complexity.Staff.Department == nil {
@@ -516,6 +527,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Staff.Token(childComplexity), true
+
+	case "Task.department":
+		if e.complexity.Task.Department == nil {
+			break
+		}
+
+		return e.complexity.Task.Department(childComplexity), true
 
 	case "Task.description":
 		if e.complexity.Task.Description == nil {
@@ -718,6 +736,15 @@ func (ec *executionContext) field_Mutation_createDepartment_args(ctx context.Con
 		}
 	}
 	args["name"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -733,6 +760,15 @@ func (ec *executionContext) field_Mutation_createLocation_args(ctx context.Conte
 		}
 	}
 	args["name"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -748,6 +784,15 @@ func (ec *executionContext) field_Mutation_createProject_args(ctx context.Contex
 		}
 	}
 	args["name"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -778,6 +823,15 @@ func (ec *executionContext) field_Mutation_createTask_args(ctx context.Context, 
 		}
 	}
 	args["input"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -793,6 +847,15 @@ func (ec *executionContext) field_Mutation_deleteDepartment_args(ctx context.Con
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -808,6 +871,15 @@ func (ec *executionContext) field_Mutation_deleteLocation_args(ctx context.Conte
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -823,6 +895,15 @@ func (ec *executionContext) field_Mutation_deleteProject_args(ctx context.Contex
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -838,6 +919,15 @@ func (ec *executionContext) field_Mutation_deleteStaff_args(ctx context.Context,
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -853,6 +943,15 @@ func (ec *executionContext) field_Mutation_deleteTask_args(ctx context.Context, 
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -877,6 +976,15 @@ func (ec *executionContext) field_Mutation_updateDepartment_args(ctx context.Con
 		}
 	}
 	args["name"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg2
 	return args, nil
 }
 
@@ -901,6 +1009,15 @@ func (ec *executionContext) field_Mutation_updateLocation_args(ctx context.Conte
 		}
 	}
 	args["name"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg2
 	return args, nil
 }
 
@@ -925,6 +1042,15 @@ func (ec *executionContext) field_Mutation_updateProject_args(ctx context.Contex
 		}
 	}
 	args["name"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg2
 	return args, nil
 }
 
@@ -949,6 +1075,15 @@ func (ec *executionContext) field_Mutation_updateStaff_args(ctx context.Context,
 		}
 	}
 	args["input"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg2
 	return args, nil
 }
 
@@ -973,6 +1108,15 @@ func (ec *executionContext) field_Mutation_updateTask_args(ctx context.Context, 
 		}
 	}
 	args["input"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg2
 	return args, nil
 }
 
@@ -1048,6 +1192,30 @@ func (ec *executionContext) field_Query_staffMember_args(ctx context.Context, ra
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_staff_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg0
 	return args, nil
 }
 
@@ -1063,6 +1231,30 @@ func (ec *executionContext) field_Query_task_args(ctx context.Context, rawArgs m
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_tasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg0
 	return args, nil
 }
 
@@ -1294,7 +1486,7 @@ func (ec *executionContext) _Mutation_createTask(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTask(rctx, fc.Args["input"].(model.TaskInput))
+		return ec.resolvers.Mutation().CreateTask(rctx, fc.Args["input"].(model.TaskInput), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1335,6 +1527,8 @@ func (ec *executionContext) fieldContext_Mutation_createTask(ctx context.Context
 				return ec.fieldContext_Task_project(ctx, field)
 			case "location":
 				return ec.fieldContext_Task_location(ctx, field)
+			case "department":
+				return ec.fieldContext_Task_department(ctx, field)
 			case "staff":
 				return ec.fieldContext_Task_staff(ctx, field)
 			}
@@ -1369,7 +1563,7 @@ func (ec *executionContext) _Mutation_updateTask(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateTask(rctx, fc.Args["id"].(int), fc.Args["input"].(model.TaskInput))
+		return ec.resolvers.Mutation().UpdateTask(rctx, fc.Args["id"].(int), fc.Args["input"].(model.TaskInput), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1410,6 +1604,8 @@ func (ec *executionContext) fieldContext_Mutation_updateTask(ctx context.Context
 				return ec.fieldContext_Task_project(ctx, field)
 			case "location":
 				return ec.fieldContext_Task_location(ctx, field)
+			case "department":
+				return ec.fieldContext_Task_department(ctx, field)
 			case "staff":
 				return ec.fieldContext_Task_staff(ctx, field)
 			}
@@ -1444,7 +1640,7 @@ func (ec *executionContext) _Mutation_deleteTask(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteTask(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Mutation().DeleteTask(rctx, fc.Args["id"].(int), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1499,7 +1695,7 @@ func (ec *executionContext) _Mutation_createProject(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateProject(rctx, fc.Args["name"].(string))
+		return ec.resolvers.Mutation().CreateProject(rctx, fc.Args["name"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1560,7 +1756,7 @@ func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProject(rctx, fc.Args["id"].(int), fc.Args["name"].(string))
+		return ec.resolvers.Mutation().UpdateProject(rctx, fc.Args["id"].(int), fc.Args["name"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1621,7 +1817,7 @@ func (ec *executionContext) _Mutation_deleteProject(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteProject(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Mutation().DeleteProject(rctx, fc.Args["id"].(int), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1676,7 +1872,7 @@ func (ec *executionContext) _Mutation_createLocation(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateLocation(rctx, fc.Args["name"].(string))
+		return ec.resolvers.Mutation().CreateLocation(rctx, fc.Args["name"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1737,7 +1933,7 @@ func (ec *executionContext) _Mutation_updateLocation(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateLocation(rctx, fc.Args["id"].(int), fc.Args["name"].(string))
+		return ec.resolvers.Mutation().UpdateLocation(rctx, fc.Args["id"].(int), fc.Args["name"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1798,7 +1994,7 @@ func (ec *executionContext) _Mutation_deleteLocation(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteLocation(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Mutation().DeleteLocation(rctx, fc.Args["id"].(int), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1922,7 +2118,7 @@ func (ec *executionContext) _Mutation_updateStaff(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateStaff(rctx, fc.Args["id"].(int), fc.Args["input"].(model.StaffInput))
+		return ec.resolvers.Mutation().UpdateStaff(rctx, fc.Args["id"].(int), fc.Args["input"].(model.StaffInput), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1991,7 +2187,7 @@ func (ec *executionContext) _Mutation_deleteStaff(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteStaff(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Mutation().DeleteStaff(rctx, fc.Args["id"].(int), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2046,7 +2242,7 @@ func (ec *executionContext) _Mutation_createDepartment(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateDepartment(rctx, fc.Args["name"].(string))
+		return ec.resolvers.Mutation().CreateDepartment(rctx, fc.Args["name"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2107,7 +2303,7 @@ func (ec *executionContext) _Mutation_updateDepartment(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateDepartment(rctx, fc.Args["id"].(int), fc.Args["name"].(string))
+		return ec.resolvers.Mutation().UpdateDepartment(rctx, fc.Args["id"].(int), fc.Args["name"].(string), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2168,7 +2364,7 @@ func (ec *executionContext) _Mutation_deleteDepartment(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteDepartment(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Mutation().DeleteDepartment(rctx, fc.Args["id"].(int), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2311,7 +2507,7 @@ func (ec *executionContext) _Query_tasks(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Tasks(rctx)
+		return ec.resolvers.Query().Tasks(rctx, fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2352,11 +2548,24 @@ func (ec *executionContext) fieldContext_Query_tasks(ctx context.Context, field 
 				return ec.fieldContext_Task_project(ctx, field)
 			case "location":
 				return ec.fieldContext_Task_location(ctx, field)
+			case "department":
+				return ec.fieldContext_Task_department(ctx, field)
 			case "staff":
 				return ec.fieldContext_Task_staff(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Task", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_tasks_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -2375,7 +2584,7 @@ func (ec *executionContext) _Query_task(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Task(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Query().Task(rctx, fc.Args["id"].(int), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2416,6 +2625,8 @@ func (ec *executionContext) fieldContext_Query_task(ctx context.Context, field g
 				return ec.fieldContext_Task_project(ctx, field)
 			case "location":
 				return ec.fieldContext_Task_location(ctx, field)
+			case "department":
+				return ec.fieldContext_Task_department(ctx, field)
 			case "staff":
 				return ec.fieldContext_Task_staff(ctx, field)
 			}
@@ -2672,7 +2883,7 @@ func (ec *executionContext) _Query_staff(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Staff(rctx)
+		return ec.resolvers.Query().Staff(rctx, fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2713,6 +2924,17 @@ func (ec *executionContext) fieldContext_Query_staff(ctx context.Context, field 
 			return nil, fmt.Errorf("no field named %q was found under type Staff", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_staff_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
 	return fc, nil
 }
 
@@ -2730,7 +2952,7 @@ func (ec *executionContext) _Query_staffMember(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().StaffMember(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Query().StaffMember(rctx, fc.Args["id"].(int), fc.Args["token"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3668,6 +3890,56 @@ func (ec *executionContext) fieldContext_Task_location(ctx context.Context, fiel
 				return ec.fieldContext_Location_name(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Location", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Task_department(ctx context.Context, field graphql.CollectedField, obj *model.Task) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Task_department(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Department, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Department)
+	fc.Result = res
+	return ec.marshalNDepartment2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐDepartment(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Task_department(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Task",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Department_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Department_name(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Department", field.Name)
 		},
 	}
 	return fc, nil
@@ -5567,7 +5839,7 @@ func (ec *executionContext) unmarshalInputTaskInput(ctx context.Context, obj int
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "description", "detail", "userID", "status", "projectID", "locationID", "staffIDs"}
+	fieldsInOrder := [...]string{"name", "description", "detail", "userID", "status", "projectID", "locationID", "departmentID", "staffIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5637,6 +5909,15 @@ func (ec *executionContext) unmarshalInputTaskInput(ctx context.Context, obj int
 				return it, err
 			}
 			it.LocationID = data
+		case "departmentID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("departmentID"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DepartmentID = data
 		case "staffIDs":
 			var err error
 
@@ -6321,6 +6602,11 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "location":
 			out.Values[i] = ec._Task_location(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "department":
+			out.Values[i] = ec._Task_department(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

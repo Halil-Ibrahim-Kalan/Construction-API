@@ -34,24 +34,26 @@ type StaffInput struct {
 }
 
 type Task struct {
-	ID          int       `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Detail      string    `json:"detail"`
-	User        *Staff    `json:"user"`
-	Status      string    `json:"status"`
-	Project     *Project  `json:"project"`
-	Location    *Location `json:"location"`
-	Staff       []*Staff  `json:"staff"`
+	ID          int         `json:"id"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Detail      string      `json:"detail"`
+	User        *Staff      `json:"user"`
+	Status      string      `json:"status"`
+	Project     *Project    `json:"project"`
+	Location    *Location   `json:"location"`
+	Department  *Department `json:"department"`
+	Staff       []*Staff    `json:"staff"`
 }
 
 type TaskInput struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Detail      string `json:"detail"`
-	UserID      int    `json:"userID"`
-	Status      string `json:"status"`
-	ProjectID   int    `json:"projectID"`
-	LocationID  int    `json:"locationID"`
-	StaffIDs    []int  `json:"staffIDs"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Detail       string `json:"detail"`
+	UserID       int    `json:"userID"`
+	Status       string `json:"status"`
+	ProjectID    int    `json:"projectID"`
+	LocationID   int    `json:"locationID"`
+	DepartmentID int    `json:"departmentID"`
+	StaffIDs     []int  `json:"staffIDs"`
 }

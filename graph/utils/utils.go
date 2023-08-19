@@ -10,6 +10,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type Permission int
+
+const (
+	Administrator Permission = iota
+	Staff
+)
+
 func ToProject(id int, r *gorm.DB) *model.Project {
 	project := model.Project{}
 	err := r.First(&project, "id = ?", id).Error
@@ -40,27 +47,46 @@ func ToDepartment(id int, r *gorm.DB) *model.Department {
 func MapStaffFromInput(staffIDs []int, r *gorm.DB) []*model.Staff {
 	var staff []*model.Staff
 	for _, staffID := range staffIDs {
-		staffMember, _ := ToStaff(staffID, r)
-		staff = append(staff, staffMember)
+		if staffID != -1 {
+			staffMemberData, _ := ToStaff(staffID, r)
+			staffMember := &model.Staff{
+				ID:         staffMemberData.ID,
+				Name:       staffMemberData.Name,
+				Department: staffMemberData.Department,
+				Role:       staffMemberData.Role,
+				Password:   "secret",
+				Token:      "secret",
+			}
+			staff = append(staff, staffMember)
+		}
 	}
 	return staff
 }
 
 func ToTask(data model.TaskData, r *gorm.DB) model.Task {
-	user, _ := ToStaff(data.UserID, r)
+	userData, _ := ToStaff(data.UserID, r)
+	user := model.Staff{
+		ID:         userData.ID,
+		Name:       userData.Name,
+		Department: userData.Department,
+		Role:       userData.Role,
+		Password:   "secret",
+		Token:      "secret",
+	}
 	project := ToProject(data.ProjectID, r)
 	location := ToLocation(data.LocationID, r)
-	staff := MapStaffFromInput(arrayToSlice(data.StaffIDs), r)
-
+	department := ToDepartment(data.DepartmentID, r)
+	staff := MapStaffFromInput(ArrayToSlice(data.StaffIDs), r)
 	task := model.Task{
 		ID:          data.ID,
 		Name:        data.Name,
 		Description: data.Description,
 		Detail:      data.Detail,
-		User:        user,
+		User:        &user,
 		Status:      data.Status,
 		Project:     project,
 		Location:    location,
+		Department:  department,
 		Staff:       staff,
 	}
 	return task
@@ -74,14 +100,15 @@ func ToTaskData(input model.TaskInput, r *gorm.DB) model.TaskData {
 	}
 
 	data := model.TaskData{
-		Name:        input.Name,
-		Description: input.Description,
-		Detail:      input.Detail,
-		UserID:      input.UserID,
-		Status:      input.Status,
-		ProjectID:   input.ProjectID,
-		LocationID:  input.LocationID,
-		StaffIDs:    pq.Int64Array(staffIDs),
+		Name:         input.Name,
+		Description:  input.Description,
+		Detail:       input.Detail,
+		UserID:       input.UserID,
+		Status:       input.Status,
+		ProjectID:    input.ProjectID,
+		LocationID:   input.LocationID,
+		DepartmentID: input.DepartmentID,
+		StaffIDs:     pq.Int64Array(staffIDs),
 	}
 	return data
 }
@@ -113,32 +140,12 @@ func ToStaff(id int, r *gorm.DB) (*model.Staff, error) {
 	return &staffMember, nil
 }
 
-func arrayToSlice(array pq.Int64Array) []int {
+func ArrayToSlice(array pq.Int64Array) []int {
 	var intSlice []int
 	for _, value := range array {
 		intSlice = append(intSlice, int(value))
 	}
 	return intSlice
-}
-
-func DataToTask(data model.TaskData, r *gorm.DB) model.Task {
-	user, _ := ToStaff(data.ID, r)
-	project := ToProject(data.ProjectID, r)
-	location := ToLocation(data.LocationID, r)
-	staff := MapStaffFromInput(arrayToSlice(data.StaffIDs), r)
-
-	task := model.Task{
-		ID:          data.ID,
-		Name:        data.Name,
-		Description: data.Description,
-		Detail:      data.Detail,
-		User:        user,
-		Status:      data.Status,
-		Project:     project,
-		Location:    location,
-		Staff:       staff,
-	}
-	return task
 }
 
 func CheckTask(input model.TaskInput, r *gorm.DB) (bool, error) {
@@ -220,4 +227,23 @@ func GenerateToken(name string) (string, error) {
 	}
 
 	return string(hashedPassword), nil
+}
+
+func GetPermission(token string, r *gorm.DB) (Permission, error) {
+	var role string
+	err := r.Model(&model.StaffData{}).Select("role").Where("token = ?", token).Scan(&role).Error
+
+	if err != gorm.ErrRecordNotFound && err != nil {
+		return 0, err
+	}
+
+	if err == gorm.ErrRecordNotFound {
+		return 0, errors.New("invalid token")
+	}
+
+	if role == "Administrator" {
+		return Administrator, nil
+	}
+
+	return Staff, nil
 }

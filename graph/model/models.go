@@ -12,13 +12,14 @@ type StaffData struct {
 }
 
 type TaskData struct {
-	ID          int `gorm:"primaryKey"`
-	Name        string
-	Description string
-	Detail      string
-	UserID      int
-	Status      string
-	ProjectID   int
-	LocationID  int
-	StaffIDs    pq.Int64Array `gorm:"type:integer[]"`
+	ID           int `gorm:"primaryKey"`
+	Name         string
+	Description  string
+	Detail       string
+	UserID       int
+	Status       string
+	ProjectID    int
+	LocationID   int
+	DepartmentID int
+	StaffIDs     pq.Int64Array `gorm:"type:integer[]"`
 }

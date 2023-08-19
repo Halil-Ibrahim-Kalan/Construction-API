@@ -7,6 +7,7 @@ type Task {
   status: String!
   project: Project!
   location: Location!
+  department: Department!
   staff: [Staff!]!
 }
 
@@ -49,12 +50,13 @@ input TaskInput {
   status: String!
   projectID: ID!
   locationID: ID!
+  departmentID: ID!
   staffIDs: [ID!]!
 }
 
 type Query {
-  tasks: [Task!]!
-  task(id: ID!): Task!
+  tasks(token: String!): [Task!]!
+  task(id: ID!, token: String!): Task!
 
   projects: [Project!]!
   project(id: ID!): Project!
@@ -62,31 +64,31 @@ type Query {
   locations: [Location!]!
   location(id: ID!): Location!
 
-  staff: [Staff!]!
-  staffMember(id: ID!): Staff!
+  staff(token: String!): [Staff!]!
+  staffMember(id: ID!, token: String!): Staff!
 
   departments: [Department!]!
   department(id: ID!): Department!
 }
 
 type Mutation {
-  createTask(input: TaskInput!): Task!
-  updateTask(id: ID!, input: TaskInput!): Task!
-  deleteTask(id: ID!): Boolean!
+  createTask(input: TaskInput!, token: String!): Task!
+  updateTask(id: ID!, input: TaskInput!, token: String!): Task!
+  deleteTask(id: ID!, token: String!): Boolean!
 
-  createProject(name: String!): Project!
-  updateProject(id: ID!, name: String!): Project!
-  deleteProject(id: ID!): Boolean!
+  createProject(name: String!, token: String!): Project!
+  updateProject(id: ID!, name: String!, token: String!): Project!
+  deleteProject(id: ID!, token: String!): Boolean!
 
-  createLocation(name: String!): Location!
-  updateLocation(id: ID!, name: String!): Location!
-  deleteLocation(id: ID!): Boolean!
+  createLocation(name: String!, token: String!): Location!
+  updateLocation(id: ID!, name: String!, token: String!): Location!
+  deleteLocation(id: ID!, token: String!): Boolean!
 
   createStaff(input: StaffInput!): Staff!
-  updateStaff(id: ID!, input: StaffInput!): Staff!
-  deleteStaff(id: ID!): Boolean!
+  updateStaff(id: ID!, input: StaffInput!, token: String!): Staff!
+  deleteStaff(id: ID!, token: String!): Boolean!
 
-  createDepartment(name: String!): Department!
-  updateDepartment(id: ID!, name: String!): Department!
-  deleteDepartment(id: ID!): Boolean!
+  createDepartment(name: String!, token: String!): Department!
+  updateDepartment(id: ID!, name: String!, token: String!): Department!
+  deleteDepartment(id: ID!, token: String!): Boolean!
 }

@@ -11,6 +11,21 @@ type Task {
   staff: [Staff!]!
 }
 
+type Room {
+  id: ID!
+  name: String!
+  messages: [Message!]!
+  participants: [Staff!]!
+}
+
+type Message {
+  id: ID!
+  sender: Staff!
+  recipient: Staff!
+  content: String!
+  timestamp: String!
+}
+
 type Staff {
   id: ID!
   name: String!
@@ -35,6 +50,11 @@ type Department {
   name: String!
 }
 
+type login {
+  userID: ID!
+  token: String!
+}
+
 input StaffInput {
   name: String!
   departmentID: ID!
@@ -54,6 +74,16 @@ input TaskInput {
   staffIDs: [ID!]!
 }
 
+type RoomInput {
+  name: String!
+  participantIDs: [ID!]!
+}
+
+type MessageInput {
+  roomID: ID!
+  content: String!
+}
+
 type Query {
   tasks(token: String!): [Task!]!
   task(id: ID!, token: String!): Task!
@@ -69,6 +99,14 @@ type Query {
 
   departments: [Department!]!
   department(id: ID!): Department!
+
+  rooms(token: String!): [Room!]!
+  room(id: ID, token: String!): Room!
+
+  messages(token: String!): [Message!]!
+  message(id: ID!, token: String!): Message!
+
+  login(name: String!, password: String!): login!
 }
 
 type Mutation {

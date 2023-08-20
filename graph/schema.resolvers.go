@@ -9,6 +9,7 @@ import (
 	"Construction-API/graph/utils"
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -631,6 +632,49 @@ func (r *queryResolver) Department(ctx context.Context, id int) (*model.Departme
 	}
 
 	return department, nil
+}
+
+// Rooms is the resolver for the rooms field.
+func (r *queryResolver) Rooms(ctx context.Context, token string) ([]*model.Room, error) {
+	panic(fmt.Errorf("not implemented: Rooms - rooms"))
+}
+
+// Room is the resolver for the room field.
+func (r *queryResolver) Room(ctx context.Context, id *int, token string) (*model.Room, error) {
+	panic(fmt.Errorf("not implemented: Room - room"))
+}
+
+// Messages is the resolver for the messages field.
+func (r *queryResolver) Messages(ctx context.Context, token string) ([]*model.Message, error) {
+	panic(fmt.Errorf("not implemented: Messages - messages"))
+}
+
+// Message is the resolver for the message field.
+func (r *queryResolver) Message(ctx context.Context, id int, token string) (*model.Message, error) {
+	panic(fmt.Errorf("not implemented: Message - message"))
+}
+
+// Login is the resolver for the login field.
+func (r *queryResolver) Login(ctx context.Context, name string, password string) (*model.Login, error) {
+	var staff *model.StaffData
+	err := r.DB.Set("gorm:auto_preload", true).Where("name = ?", name).First(&staff).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, errors.New("user not found")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if staff.Password != password {
+		return nil, errors.New("wrong password")
+	}
+
+	return &model.Login{
+		UserID: staff.ID,
+		Token:  staff.Token,
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.

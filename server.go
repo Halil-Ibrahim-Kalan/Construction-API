@@ -6,11 +6,10 @@ import (
 
 	"Construction-API/databases"
 	"Construction-API/graph"
-	"Construction-API/middlewares"
+	"Construction-API/middleware"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
 )
 
@@ -18,7 +17,7 @@ func main() {
 	db := databases.InitDb()
 
 	e := echo.New()
-	middlewares.Middleware(e)
+	middleware.Middleware(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome to the GraphQL API")

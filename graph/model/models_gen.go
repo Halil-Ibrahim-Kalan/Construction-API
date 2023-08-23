@@ -14,6 +14,7 @@ type Location struct {
 
 type Message struct {
 	ID        int    `json:"id"`
+	Room      *Room  `json:"room"`
 	Sender    *Staff `json:"sender"`
 	Recipient *Staff `json:"recipient"`
 	Content   string `json:"content"`
@@ -21,8 +22,9 @@ type Message struct {
 }
 
 type MessageInput struct {
-	RoomID  int    `json:"roomID"`
-	Content string `json:"content"`
+	RoomID      int    `json:"roomID"`
+	Content     string `json:"content"`
+	RecipientID int    `json:"recipientID"`
 }
 
 type Project struct {
@@ -31,10 +33,9 @@ type Project struct {
 }
 
 type Room struct {
-	ID           int        `json:"id"`
-	Name         string     `json:"name"`
-	Messages     []*Message `json:"messages"`
-	Participants []*Staff   `json:"participants"`
+	ID           int      `json:"id"`
+	Name         string   `json:"name"`
+	Participants []*Staff `json:"participants"`
 }
 
 type RoomInput struct {

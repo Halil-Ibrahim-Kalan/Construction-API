@@ -4,6 +4,7 @@ import (
 	"Construction-API/graph/model"
 	"errors"
 	"strconv"
+	"time"
 
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
@@ -44,11 +45,14 @@ func ToDepartment(id int, r *gorm.DB) *model.Department {
 	return &department
 }
 
-func MapStaffFromInput(staffIDs []int, r *gorm.DB) []*model.Staff {
+func MapStaffFromInput(staffIDs []int, r *gorm.DB) ([]*model.Staff, error) {
 	var staff []*model.Staff
 	for _, staffID := range staffIDs {
 		if staffID != -1 {
-			staffMemberData, _ := ToStaff(staffID, r)
+			staffMemberData, err := ToStaff(staffID, r)
+			if err != nil {
+				return nil, err
+			}
 			staffMember := &model.Staff{
 				ID:         staffMemberData.ID,
 				Name:       staffMemberData.Name,
@@ -60,10 +64,10 @@ func MapStaffFromInput(staffIDs []int, r *gorm.DB) []*model.Staff {
 			staff = append(staff, staffMember)
 		}
 	}
-	return staff
+	return staff, nil
 }
 
-func ToTask(data model.TaskData, r *gorm.DB) model.Task {
+func ToTask(data model.TaskData, r *gorm.DB) (model.Task, error) {
 	userData, _ := ToStaff(data.UserID, r)
 	user := model.Staff{
 		ID:         userData.ID,
@@ -76,7 +80,11 @@ func ToTask(data model.TaskData, r *gorm.DB) model.Task {
 	project := ToProject(data.ProjectID, r)
 	location := ToLocation(data.LocationID, r)
 	department := ToDepartment(data.DepartmentID, r)
-	staff := MapStaffFromInput(ArrayToSlice(data.StaffIDs), r)
+	staff, err := MapStaffFromInput(ArrayToSlice(data.StaffIDs), r)
+	if err != nil {
+		return model.Task{}, err
+	}
+
 	task := model.Task{
 		ID:          data.ID,
 		Name:        data.Name,
@@ -89,7 +97,15 @@ func ToTask(data model.TaskData, r *gorm.DB) model.Task {
 		Department:  department,
 		Staff:       staff,
 	}
-	return task
+	return task, nil
+}
+
+func SliceToArray(slice []int) pq.Int64Array {
+	var array pq.Int64Array
+	for _, value := range slice {
+		array = append(array, int64(value))
+	}
+	return array
 }
 
 func ToTaskData(input model.TaskInput, r *gorm.DB) model.TaskData {
@@ -246,4 +262,143 @@ func GetPermission(token string, r *gorm.DB) (Permission, error) {
 	}
 
 	return Staff, nil
+}
+
+func ToMessage(id int, r *gorm.DB) (*model.Message, error) {
+	messageData := model.MessageData{}
+	err := r.First(&messageData, "id = ?", id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	room, err := ToRoom(messageData.RoomID, r)
+	if err != nil {
+		return nil, err
+	}
+
+	sender, err := ToStaff(messageData.SenderID, r)
+	if err != nil {
+		return nil, err
+	}
+
+	recipient, err := ToStaff(messageData.RecipientID, r)
+	if err != nil {
+		return nil, err
+	}
+
+	sender.Password = "secret"
+	sender.Token = "secret"
+
+	recipient.Password = "secret"
+	recipient.Token = "secret"
+
+	message := model.Message{
+		ID:        messageData.ID,
+		Room:      room,
+		Sender:    sender,
+		Recipient: recipient,
+		Content:   messageData.Content,
+		Timestamp: messageData.Timestamp.Format("2006-01-02 15:04:05"),
+	}
+	return &message, nil
+}
+
+func ToRoom(id int, r *gorm.DB) (*model.Room, error) {
+	var roomData model.RoomData
+	err := r.Set("gorm:auto_preload", true).Where("id = ?", id).First(&roomData).Error
+	if err != nil {
+		return nil, err
+	}
+
+	participants, err := MapStaffFromInput(ArrayToSlice(roomData.ParticipantIDs), r)
+	if err != nil {
+		return nil, err
+	}
+
+	room := model.Room{
+		ID:           roomData.ID,
+		Name:         roomData.Name,
+		Participants: participants,
+	}
+
+	return &room, nil
+}
+
+func ToRoomByUser(id, userID int, r *gorm.DB) (*model.Room, error) {
+	room, err := ToRoom(id, r)
+	if err != nil {
+		return nil, err
+	}
+
+	found := false
+	for _, participant := range room.Participants {
+		if participant.ID == userID {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return nil, errors.New("permission denied")
+	}
+
+	return room, nil
+}
+
+func InputToMessageAndMessageData(input model.MessageInput, token string, r *gorm.DB) (*model.Message, *model.MessageData, error) {
+	perm, err := GetPermission(token, r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var senderID int
+	err = r.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&senderID).Error
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if senderID == input.RecipientID {
+		return nil, nil, errors.New("cannot send message to yourself")
+	}
+
+	sender, err := ToStaff(senderID, r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	recipient, err := ToStaff(input.RecipientID, r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var room *model.Room
+	if perm == Administrator {
+		room, err = ToRoom(input.RoomID, r)
+	} else {
+		room, err = ToRoomByUser(input.RoomID, senderID, r)
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+
+	timestampData := time.Now()
+	timestamp := timestampData.Format("2006-01-02 15:04:05")
+
+	messageData := model.MessageData{
+		RoomID:      input.RoomID,
+		SenderID:    senderID,
+		RecipientID: input.RecipientID,
+		Content:     input.Content,
+		Timestamp:   timestampData,
+	}
+
+	message := model.Message{
+		Room:      room,
+		Sender:    sender,
+		Recipient: recipient,
+		Content:   input.Content,
+		Timestamp: timestamp,
+	}
+
+	return &message, &messageData, nil
 }

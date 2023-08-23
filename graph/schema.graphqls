@@ -14,12 +14,12 @@ type Task {
 type Room {
   id: ID!
   name: String!
-  messages: [Message!]!
   participants: [Staff!]!
 }
 
 type Message {
   id: ID!
+  room: Room!
   sender: Staff!
   recipient: Staff!
   content: String!
@@ -74,14 +74,15 @@ input TaskInput {
   staffIDs: [ID!]!
 }
 
-type RoomInput {
+input RoomInput {
   name: String!
   participantIDs: [ID!]!
 }
 
-type MessageInput {
+input MessageInput {
   roomID: ID!
   content: String!
+  recipientID: ID!
 }
 
 type Query {
@@ -101,9 +102,9 @@ type Query {
   department(id: ID!): Department!
 
   rooms(token: String!): [Room!]!
-  room(id: ID, token: String!): Room!
+  room(id: ID!, token: String!): Room!
 
-  messages(token: String!): [Message!]!
+  messages(token: String!, roomID: ID!): [Message!]!
   message(id: ID!, token: String!): Message!
 
   login(name: String!, password: String!): login!
@@ -129,4 +130,12 @@ type Mutation {
   createDepartment(name: String!, token: String!): Department!
   updateDepartment(id: ID!, name: String!, token: String!): Department!
   deleteDepartment(id: ID!, token: String!): Boolean!
+
+  createRoom(input: RoomInput!, token: String!): Room!
+  updateRoom(id: ID!, input: RoomInput!, token: String!): Room!
+  deleteRoom(id: ID!, token: String!): Boolean!
+
+  createMessage(input: MessageInput!, token: String!): Message!
+  updateMessage(id: ID!, content: String!, token: String!): Message!
+  deleteMessage(id: ID!, token: String!): Boolean!
 }

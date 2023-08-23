@@ -11,7 +11,7 @@ import (
 
 func InitDb() *gorm.DB {
 	Db := connectPostgresDB()
-	Db.AutoMigrate(&model.Department{}, &model.Location{}, &model.Project{}, &model.StaffData{}, &model.TaskData{})
+	Db.AutoMigrate(&model.Department{}, &model.Location{}, &model.Project{}, &model.StaffData{}, &model.TaskData{}, &model.RoomData{}, &model.MessageData{})
 
 	return Db
 }

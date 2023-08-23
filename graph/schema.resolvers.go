@@ -9,7 +9,6 @@ import (
 	"Construction-API/graph/utils"
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -37,7 +36,11 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input model.TaskInput
 		return nil, err
 	}
 
-	task := utils.ToTask(data, r.DB)
+	task, err := utils.ToTask(data, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
 	return &task, nil
 }
 
@@ -65,7 +68,11 @@ func (r *mutationResolver) UpdateTask(ctx context.Context, id int, input model.T
 		return nil, err
 	}
 
-	task := utils.ToTask(data, r.DB)
+	task, err := utils.ToTask(data, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
 	task.ID = id
 	return &task, nil
 }
@@ -244,7 +251,7 @@ func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInp
 	data := model.StaffData{
 		Name:         input.Name,
 		DepartmentID: input.DepartmentID,
-		Role:         input.Role,
+		Role:         "Staff",
 		Password:     input.Password,
 		Token:        token,
 	}
@@ -259,7 +266,7 @@ func (r *mutationResolver) CreateStaff(ctx context.Context, input model.StaffInp
 		ID:         data.ID,
 		Name:       input.Name,
 		Department: department,
-		Role:       input.Role,
+		Role:       "Staff",
 		Password:   input.Password,
 		Token:      token,
 	}
@@ -293,6 +300,10 @@ func (r *mutationResolver) UpdateStaff(ctx context.Context, id int, input model.
 	err = r.DB.Model(&model.StaffData{}).Select("token").Where("id = ?", id).Scan(&staffToken).Error
 	if err != nil {
 		return nil, err
+	}
+
+	if perm != utils.Administrator {
+		input.Role = "Staff"
 	}
 
 	data := model.StaffData{
@@ -397,6 +408,210 @@ func (r *mutationResolver) DeleteDepartment(ctx context.Context, id int, token s
 	}
 
 	err = r.DB.Where("id = ?", id).Delete(&model.Department{}).Error
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// CreateRoom is the resolver for the createRoom field.
+func (r *mutationResolver) CreateRoom(ctx context.Context, input model.RoomInput, token string) (*model.Room, error) {
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	if perm != utils.Administrator {
+		return nil, errors.New("permission denied")
+	}
+
+	if input.ParticipantIDs == nil || input.Name == "" {
+		return nil, errors.New("invalid input")
+	}
+
+	participants, err := utils.MapStaffFromInput(input.ParticipantIDs, r.DB)
+	if err == gorm.ErrRecordNotFound {
+		return nil, errors.New("invalid input")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	roomData := model.RoomData{
+		Name:           input.Name,
+		ParticipantIDs: utils.SliceToArray(input.ParticipantIDs),
+	}
+
+	err = r.DB.Create(&roomData).Error
+	if err != nil {
+		return nil, err
+	}
+
+	room := model.Room{
+		ID:           roomData.ID,
+		Name:         input.Name,
+		Participants: participants,
+	}
+
+	return &room, nil
+}
+
+// UpdateRoom is the resolver for the updateRoom field.
+func (r *mutationResolver) UpdateRoom(ctx context.Context, id int, input model.RoomInput, token string) (*model.Room, error) {
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	if perm != utils.Administrator {
+		return nil, errors.New("permission denied")
+	}
+
+	if input.ParticipantIDs == nil || input.Name == "" {
+		return nil, errors.New("invalid input")
+	}
+
+	participants, err := utils.MapStaffFromInput(input.ParticipantIDs, r.DB)
+	if err == gorm.ErrRecordNotFound {
+		return nil, errors.New("invalid input")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	roomData := model.RoomData{
+		ID:             id,
+		Name:           input.Name,
+		ParticipantIDs: utils.SliceToArray(input.ParticipantIDs),
+	}
+
+	err = r.DB.Save(&roomData).Error
+	if err != nil {
+		return nil, err
+	}
+
+	room := model.Room{
+		ID:           roomData.ID,
+		Name:         input.Name,
+		Participants: participants,
+	}
+
+	return &room, nil
+}
+
+// DeleteRoom is the resolver for the deleteRoom field.
+func (r *mutationResolver) DeleteRoom(ctx context.Context, id int, token string) (bool, error) {
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return false, err
+	}
+	if perm != utils.Administrator {
+		return false, errors.New("permission denied")
+	}
+
+	err = r.DB.Where("id = ?", id).Delete(&model.RoomData{}).Error
+	if err != nil {
+		return false, err
+	}
+
+	err = r.DB.Where("room_id = ?", id).Delete(&model.MessageData{}).Error
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// CreateMessage is the resolver for the createMessage field.
+func (r *mutationResolver) CreateMessage(ctx context.Context, input model.MessageInput, token string) (*model.Message, error) {
+	message, messageData, err := utils.InputToMessageAndMessageData(input, token, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.DB.Create(&messageData).Error
+	if err != nil {
+		return nil, err
+	}
+
+	message.ID = messageData.ID
+
+	return message, nil
+}
+
+// UpdateMessage is the resolver for the updateMessage field.
+func (r *mutationResolver) UpdateMessage(ctx context.Context, id int, content string, token string) (*model.Message, error) {
+	var userID int
+	err := r.DB.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var senderID int
+	err = r.DB.Model(&model.MessageData{}).Select("sender_id").Where("id = ?", id).First(&senderID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if userID != senderID {
+		return nil, errors.New("permission denied")
+	}
+
+	if content == "" {
+		return nil, errors.New("invalid input")
+	}
+
+	var previousContent string
+	err = r.DB.Model(&model.MessageData{}).Select("content").Where("id = ?", id).First(&previousContent).Error
+	if err != nil {
+		return nil, err
+	}
+
+	if previousContent == content {
+		return nil, errors.New("invalid input")
+	}
+	err = r.DB.Model(&model.MessageData{}).Where("id = ?", id).Update("content", content).Error
+	if err != nil {
+		return nil, err
+	}
+
+	message, err := utils.ToMessage(id, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	return message, nil
+}
+
+// DeleteMessage is the resolver for the deleteMessage field.
+func (r *mutationResolver) DeleteMessage(ctx context.Context, id int, token string) (bool, error) {
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return false, err
+	}
+
+	if perm == utils.Administrator {
+		err = r.DB.Where("id = ?", id).Delete(&model.Department{}).Error
+	} else {
+		var userID int
+		err = r.DB.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&userID).Error
+		if err != nil {
+			return false, err
+		}
+
+		var senderID int
+		err = r.DB.Model(&model.MessageData{}).Select("sender_id").Where("id = ?", id).First(&senderID).Error
+		if err != nil {
+			return false, err
+		}
+
+		if userID != senderID {
+			return false, errors.New("permission denied")
+		}
+
+		err = r.DB.Where("id = ?", id).Delete(&model.MessageData{}).Error
+	}
 
 	if err != nil {
 		return false, err
@@ -433,7 +648,10 @@ func (r *queryResolver) Tasks(ctx context.Context, token string) ([]*model.Task,
 
 	var tasks []*model.Task
 	for _, taskData := range data {
-		task := utils.ToTask(*taskData, r.DB)
+		task, err := utils.ToTask(*taskData, r.DB)
+		if err != nil {
+			return nil, err
+		}
 		tasks = append(tasks, &task)
 	}
 
@@ -468,7 +686,10 @@ func (r *queryResolver) Task(ctx context.Context, id int, token string) (*model.
 		return nil, err
 	}
 
-	task := utils.ToTask(*data, r.DB)
+	task, err := utils.ToTask(*data, r.DB)
+	if err != nil {
+		return nil, err
+	}
 
 	return &task, nil
 }
@@ -636,22 +857,172 @@ func (r *queryResolver) Department(ctx context.Context, id int) (*model.Departme
 
 // Rooms is the resolver for the rooms field.
 func (r *queryResolver) Rooms(ctx context.Context, token string) ([]*model.Room, error) {
-	panic(fmt.Errorf("not implemented: Rooms - rooms"))
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	var rooms []*model.Room
+	if perm == utils.Administrator {
+		var roomsData []*model.RoomData
+		err = r.DB.Set("gorm:auto_preload", true).Find(&roomsData).Error
+		if err != nil {
+			return nil, err
+		}
+
+		var IDs []int
+		err = r.DB.Set("gorm:auto_preload", true).Model(&model.RoomData{}).Select("id").Find(&IDs).Error
+		if err != nil {
+			return nil, err
+		}
+
+		for _, id := range IDs {
+			room, err := utils.ToRoom(id, r.DB)
+			if err != nil {
+				return nil, err
+			}
+			rooms = append(rooms, room)
+		}
+
+	} else {
+		var userID int
+		err = r.DB.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&userID).Error
+		if err != nil {
+			return nil, err
+		}
+
+		var IDs []int
+		err = r.DB.Set("gorm:auto_preload", true).Model(&model.RoomData{}).Select("id").Find(&IDs).Error
+		if err != nil {
+			return nil, err
+		}
+
+		for _, id := range IDs {
+			room, err := utils.ToRoomByUser(id, userID, r.DB)
+			if err == nil {
+				rooms = append(rooms, room)
+			} else if err.Error() != "permission denied" {
+				return nil, err
+			}
+		}
+	}
+	return rooms, nil
 }
 
 // Room is the resolver for the room field.
-func (r *queryResolver) Room(ctx context.Context, id *int, token string) (*model.Room, error) {
-	panic(fmt.Errorf("not implemented: Room - room"))
+func (r *queryResolver) Room(ctx context.Context, id int, token string) (*model.Room, error) {
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	if perm == utils.Administrator {
+		room, err := utils.ToRoom(id, r.DB)
+		if err != nil {
+			return nil, err
+		}
+		return room, nil
+	} else {
+		var userID int
+		err = r.DB.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&userID).Error
+		if err != nil {
+			return nil, err
+		}
+
+		room, err := utils.ToRoomByUser(id, userID, r.DB)
+		if err != nil {
+			return nil, err
+		}
+
+		return room, nil
+	}
 }
 
 // Messages is the resolver for the messages field.
-func (r *queryResolver) Messages(ctx context.Context, token string) ([]*model.Message, error) {
-	panic(fmt.Errorf("not implemented: Messages - messages"))
+func (r *queryResolver) Messages(ctx context.Context, token string, roomID int) ([]*model.Message, error) {
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	if perm == utils.Administrator {
+		var messageIDs []int
+		err = r.DB.Model(&model.MessageData{}).Where("room_id = ?", roomID).Select("id").Find(&messageIDs).Error
+		if err != nil {
+			return nil, err
+		}
+
+		var messages []*model.Message
+		for _, id := range messageIDs {
+			message, err := utils.ToMessage(id, r.DB)
+			if err != nil {
+				return nil, err
+			}
+			messages = append(messages, message)
+		}
+		return messages, nil
+	} else {
+		var userID int
+		err = r.DB.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&userID).Error
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = utils.ToRoomByUser(roomID, userID, r.DB)
+		if err != nil {
+			return nil, err
+		}
+
+		var messageIDs []int
+		err = r.DB.Model(&model.MessageData{}).Where("room_id = ?", roomID).Select("id").Find(&messageIDs).Error
+		if err != nil {
+			return nil, err
+		}
+
+		var messages []*model.Message
+		for _, id := range messageIDs {
+			message, err := utils.ToMessage(id, r.DB)
+			if err != nil {
+				return nil, err
+			}
+			messages = append(messages, message)
+		}
+		return messages, nil
+	}
 }
 
 // Message is the resolver for the message field.
 func (r *queryResolver) Message(ctx context.Context, id int, token string) (*model.Message, error) {
-	panic(fmt.Errorf("not implemented: Message - message"))
+	perm, err := utils.GetPermission(token, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	if perm == utils.Administrator {
+		message, err := utils.ToMessage(id, r.DB)
+		if err != nil {
+			return nil, err
+		}
+		return message, nil
+	} else {
+		var userID int
+		err = r.DB.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&userID).Error
+		if err != nil {
+			return nil, err
+		}
+
+		message, err := utils.ToMessage(id, r.DB)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = utils.ToRoomByUser(message.Room.ID, userID, r.DB)
+		if err != nil {
+			return nil, err
+		}
+
+		return message, nil
+	}
 }
 
 // Login is the resolver for the login field.

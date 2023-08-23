@@ -1,6 +1,10 @@
 package model
 
-import "github.com/lib/pq"
+import (
+	"time"
+
+	"github.com/lib/pq"
+)
 
 type StaffData struct {
 	ID           int `gorm:"primaryKey"`
@@ -22,4 +26,19 @@ type TaskData struct {
 	LocationID   int
 	DepartmentID int
 	StaffIDs     pq.Int64Array `gorm:"type:integer[]"`
+}
+
+type RoomData struct {
+	ID             int `gorm:"primaryKey"`
+	Name           string
+	ParticipantIDs pq.Int64Array `gorm:"type:integer[]"`
+}
+
+type MessageData struct {
+	ID          int `gorm:"primaryKey"`
+	RoomID      int
+	SenderID    int
+	RecipientID int
+	Content     string
+	Timestamp   time.Time
 }

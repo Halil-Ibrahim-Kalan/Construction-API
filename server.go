@@ -1,15 +1,16 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"Construction-API/databases"
 	"Construction-API/graph"
 	"Construction-API/middleware"
+	"log"
+	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 )
 
@@ -19,14 +20,28 @@ func main() {
 	e := echo.New()
 	middleware.Middleware(e)
 
+	resolver := graph.NewResolver(db)
+
+	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
+	graphqlHandler.AddTransport(transport.Websocket{
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+	})
+	playgroundHandler := playground.Handler("GraphQL playground", "/query")
+
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome to the GraphQL API")
 	})
 
-	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{DB: db}}))
-	playgroundHandler := playground.Handler("GraphQL playground", "/query")
-
 	e.POST("/query", func(c echo.Context) error {
+		graphqlHandler.ServeHTTP(c.Response(), c.Request())
+		return nil
+	})
+
+	e.GET("/query", func(c echo.Context) error {
 		graphqlHandler.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})

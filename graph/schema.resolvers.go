@@ -14,6 +14,13 @@ import (
 	"gorm.io/gorm"
 )
 
+func NewResolver(db *gorm.DB) *Resolver {
+	return &Resolver{
+		DB:   db,
+		Subs: make(map[string]chan []*model.Message),
+	}
+}
+
 // CreateTask is the resolver for the createTask field.
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.TaskInput, token string) (*model.Task, error) {
 	perm, err := utils.GetPermission(token, r.DB)
@@ -537,6 +544,13 @@ func (r *mutationResolver) CreateMessage(ctx context.Context, input model.Messag
 
 	message.ID = messageData.ID
 
+	r.SubsMutex.Lock()
+	defer r.SubsMutex.Unlock()
+
+	if messageChan, ok := r.Subs[token]; ok {
+		messageChan <- []*model.Message{message}
+	}
+
 	return message, nil
 }
 
@@ -1020,7 +1034,7 @@ func (r *queryResolver) Message(ctx context.Context, id int, token string) (*mod
 		if err != nil {
 			return nil, err
 		}
-
+		r.Subscription().MessageAdded(ctx, token)
 		return message, nil
 	}
 }
@@ -1048,11 +1062,35 @@ func (r *queryResolver) Login(ctx context.Context, name string, password string)
 	}, nil
 }
 
+// MessageAdded is the resolver for the messageAdded field.
+func (r *subscriptionResolver) MessageAdded(ctx context.Context, token string) (<-chan []*model.Message, error) {
+	r.SubsMutex.Lock()
+	defer r.SubsMutex.Unlock()
+
+	messageChan := r.Subs[token]
+	if messageChan == nil {
+		messageChan = make(chan []*model.Message)
+		r.Subs[token] = messageChan
+		go func() {
+			<-ctx.Done()
+			r.SubsMutex.Lock()
+			delete(r.Subs, token)
+			close(messageChan)
+			r.SubsMutex.Unlock()
+		}()
+	}
+	return messageChan, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Subscription returns SubscriptionResolver implementation.
+func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }

@@ -139,3 +139,7 @@ type Mutation {
   updateMessage(id: ID!, content: String!, token: String!): Message!
   deleteMessage(id: ID!, token: String!): Boolean!
 }
+
+type Subscription {
+  messageAdded(token: String!): [Message!]!
+}

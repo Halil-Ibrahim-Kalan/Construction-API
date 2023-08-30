@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.go",
+      "use": "@vercel/go"
+    }
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "http://localhost:8080/$1" }]
+}

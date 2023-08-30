@@ -129,7 +129,7 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		MessageAdded func(childComplexity int, token string) int
+		MessageAdded func(childComplexity int, token string, roomID int) int
 	}
 
 	Task struct {
@@ -192,7 +192,7 @@ type QueryResolver interface {
 	Login(ctx context.Context, name string, password string) (*model.Login, error)
 }
 type SubscriptionResolver interface {
-	MessageAdded(ctx context.Context, token string) (<-chan []*model.Message, error)
+	MessageAdded(ctx context.Context, token string, roomID int) (<-chan *model.Message, error)
 }
 
 type executableSchema struct {
@@ -784,7 +784,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.MessageAdded(childComplexity, args["token"].(string)), true
+		return e.complexity.Subscription.MessageAdded(childComplexity, args["token"].(string), args["roomID"].(int)), true
 
 	case "Task.department":
 		if e.complexity.Task.Department == nil {
@@ -1834,6 +1834,15 @@ func (ec *executionContext) field_Subscription_messageAdded_args(ctx context.Con
 		}
 	}
 	args["token"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["roomID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roomID"))
+		arg1, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["roomID"] = arg1
 	return args, nil
 }
 
@@ -5255,7 +5264,7 @@ func (ec *executionContext) _Subscription_messageAdded(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().MessageAdded(rctx, fc.Args["token"].(string))
+		return ec.resolvers.Subscription().MessageAdded(rctx, fc.Args["token"].(string), fc.Args["roomID"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5269,7 +5278,7 @@ func (ec *executionContext) _Subscription_messageAdded(ctx context.Context, fiel
 	}
 	return func(ctx context.Context) graphql.Marshaler {
 		select {
-		case res, ok := <-resTmp.(<-chan []*model.Message):
+		case res, ok := <-resTmp.(<-chan *model.Message):
 			if !ok {
 				return nil
 			}
@@ -5277,7 +5286,7 @@ func (ec *executionContext) _Subscription_messageAdded(ctx context.Context, fiel
 				w.Write([]byte{'{'})
 				graphql.MarshalString(field.Alias).MarshalGQL(w)
 				w.Write([]byte{':'})
-				ec.marshalNMessage2ᚕᚖConstructionᚑAPIᚋgraphᚋmodelᚐMessageᚄ(ctx, field.Selections, res).MarshalGQL(w)
+				ec.marshalNMessage2ᚖConstructionᚑAPIᚋgraphᚋmodelᚐMessage(ctx, field.Selections, res).MarshalGQL(w)
 				w.Write([]byte{'}'})
 			})
 		case <-ctx.Done():

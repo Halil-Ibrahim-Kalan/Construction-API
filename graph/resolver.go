@@ -13,6 +13,6 @@ import (
 
 type Resolver struct {
 	DB        *gorm.DB
-	Subs      map[string]chan []*model.Message
+	Subs      map[int]chan *model.Message
 	SubsMutex sync.Mutex
 }

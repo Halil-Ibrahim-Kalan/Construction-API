@@ -11,7 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/websocket"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
@@ -51,5 +51,6 @@ func main() {
 		return nil
 	})
 
+	println("http://localhost:8080/playground")
 	log.Fatal(e.Start(":" + "8080"))
 }

@@ -402,3 +402,17 @@ func InputToMessageAndMessageData(input model.MessageInput, token string, r *gor
 
 	return &message, &messageData, nil
 }
+
+func TokenToUser(token string, r *gorm.DB) (*model.Staff, error) {
+	var userID int
+	err := r.Model(&model.StaffData{}).Select("id").Where("token = ?", token).First(&userID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := ToStaff(userID, r)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

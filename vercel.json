@@ -1,10 +1,9 @@
 {
-  "version": 2,
-  "builds": [
+  "trailingSlash": false,
+  "rewrites": [
     {
-      "src": "server.go",
-      "use": "@vercel/go"
+      "source": "/(.*)",
+      "destination": "/server.go"
     }
-  ],
-  "routes": [{ "src": "/(.*)", "dest": "http://localhost:8080/$1" }]
+  ]
 }
